@@ -73,17 +73,17 @@ public class UserAccountController {
 		return userAccountService.checkJwt(token);		
 	}
 	
-	@PutMapping("/{login}/favorite/{favorite}")
+	@PutMapping("/{login:.*}/favorite/{favorite}")
 	public List<String> addFavorite(Principal principal, @PathVariable String favorite, @RequestHeader(value = "X-Token") String token) {
 		return userAccountService.addFavorite(principal.getName(), favorite);
 	}
 	
-	@DeleteMapping("/{login}/favorite/{favorite}")
+	@DeleteMapping("/{login:.*}/favorite/{favorite}")
 	public List<String> removeFavorite(Principal principal, @PathVariable String favorite, @RequestHeader(value = "X-Token") String token) {
 		return userAccountService.removeFavorite(principal.getName(), favorite);
 	}
 	
-	@GetMapping("/{login}/favorites/")
+	@GetMapping("/{login:.*}/favorites/")
 	public List<String> getUserFavorite(Principal principal, @RequestHeader(value = "X-Token") String token) {
 		return userAccountService.getUserFavorite(principal.getName());
 	}
