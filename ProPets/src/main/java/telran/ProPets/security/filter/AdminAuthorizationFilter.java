@@ -46,7 +46,7 @@ public class AdminAuthorizationFilter implements Filter {
 	}
 	
 	private boolean checkPointCut(Set<String> roles, String path) {
-		boolean check = !roles.contains("Administrator") && path.matches(".+/role/.+");		
+		boolean check = !roles.contains("Administrator") && (path.matches(".+/role/.+")|| path.matches(".+/block/.+"));		
 		return check;
 	}
 

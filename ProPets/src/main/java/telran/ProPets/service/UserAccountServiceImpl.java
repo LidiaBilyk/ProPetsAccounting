@@ -87,7 +87,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 
 	@Override
 	public UserProfileDto getUserById(String login) {
-		UserAccount userAccount = userAccountRepository.findById(login).get();
+		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
 		return userAccountToUserProfileDto(userAccount);
 	}
 
@@ -205,7 +205,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 	@Override
 	public List<String> removeFavorite(String userLogin, String favorite) {
 		UserAccount userAccount = userAccountRepository.findById(userLogin).orElseThrow(NotFoundException::new);
-		userAccount.addFavorite(favorite);		
+		userAccount.removeFavorite(favorite);		
 		userAccountRepository.save(userAccount);
 		return userAccount.getFavorites();
 	}
