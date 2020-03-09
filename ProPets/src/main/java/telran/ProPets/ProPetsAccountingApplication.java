@@ -10,13 +10,13 @@ import telran.ProPets.dao.UserAccountRepository;
 import telran.ProPets.model.UserAccount;
 
 @SpringBootApplication
-public class ProPetsApplication implements CommandLineRunner{
+public class ProPetsAccountingApplication implements CommandLineRunner{
 	
 	@Autowired
 	UserAccountRepository userAccountRepository;
 
 	public static void main(String[] args) {
-		SpringApplication.run(ProPetsApplication.class, args);
+		SpringApplication.run(ProPetsAccountingApplication.class, args);
 	}
 
 	@Override
