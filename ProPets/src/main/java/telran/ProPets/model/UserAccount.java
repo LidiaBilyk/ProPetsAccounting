@@ -2,6 +2,7 @@ package telran.ProPets.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -38,8 +39,12 @@ public class UserAccount implements Serializable{
 	String phone;
 	@Singular
 	@ElementCollection(fetch = FetchType.EAGER)
-	List<String> roles;
+	Set<String> roles;
+	@Singular
+	@ElementCollection
+	List<String> favorites;
 	boolean block;
+	
 	
 	public boolean addRole(String role) {
 		return roles.add(role);
@@ -50,4 +55,12 @@ public class UserAccount implements Serializable{
 		return roles.remove(role);
 	}
 
+	public boolean addFavorite(String favorite) {
+		return favorites.add(favorite);
+		
+	}
+	
+	public boolean removeFavorite(String favorite) {
+		return favorites.remove(favorite);
+	}	
 }

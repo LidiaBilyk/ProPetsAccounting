@@ -3,6 +3,7 @@ package telran.ProPets.service;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -36,22 +37,27 @@ public class UserAccountServiceImpl implements UserAccountService {
 	UserAccountRepository userAccountRepository;
 
 	@Override
-	public UserRegisterResponseDto registerUser(UserRegisterDto userRegisterDto) {
+	public ResponseEntity<UserRegisterResponseDto> registerUser(UserRegisterDto userRegisterDto) {
 		if (userAccountRepository.existsById(userRegisterDto.getEmail())) {
 			throw new ConflictException();
 		}
+		String avatar = "https://www.gravatar.com/avatar/0?d=mp";
 		String hashPassword = BCrypt.hashpw(userRegisterDto.getPassword(), BCrypt.gensalt());
 		UserAccount userAccount = UserAccount.builder()
 				.email(userRegisterDto.getEmail())
 				.password(hashPassword)
 				.name(userRegisterDto.getName())
 				.role("User")
-				.avatar("https://www.gravatar.com/avatar/0?d=mp")
+				.avatar(avatar)
 				.build();
-		return userAccountToUserRegisterResponceDto(userAccountRepository.save(userAccount));
+		UserRegisterResponseDto userRegisterResponseDto = userAccountToUserRegisterResponseDto(userAccountRepository.save(userAccount));
+		String jwt = createJwt(userRegisterDto.getEmail(), secret);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("X-Token", jwt);
+		return new ResponseEntity<UserRegisterResponseDto>(userRegisterResponseDto, headers, HttpStatus.OK);		 
 	}
 
-	private UserRegisterResponseDto userAccountToUserRegisterResponceDto(UserAccount userAccount) {
+	private UserRegisterResponseDto userAccountToUserRegisterResponseDto(UserAccount userAccount) {
 		return UserRegisterResponseDto.builder()
 				.email(userAccount.getEmail())
 				.name(userAccount.getName())
@@ -114,7 +120,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 	}
 
 	@Override
-	public List<String> addRole(String userLogin, String role) {
+	public Set<String> addRole(String userLogin, String role) {
 		UserAccount userAccount = userAccountRepository.findById(userLogin).orElseThrow(NotFoundException::new);
 		userAccount.addRole(role);		
 		userAccountRepository.save(userAccount);
@@ -122,7 +128,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 	}
 
 	@Override
-	public List<String> removeRole(String userLogin, String role) {
+	public Set<String> removeRole(String userLogin, String role) {
 		UserAccount userAccount = userAccountRepository.findById(userLogin).orElseThrow(NotFoundException::new);
 		userAccount.removeRole(role);
 		userAccountRepository.save(userAccount);
@@ -175,7 +181,6 @@ public class UserAccountServiceImpl implements UserAccountService {
 				.setSubject(login)
 				.setExpiration(exp)
 				.signWith(signatureAlgotithm, signingKey);
-
 		return jwtBuilder.compact();
 	}
 
@@ -186,5 +191,29 @@ public class UserAccountServiceImpl implements UserAccountService {
 				.getBody();
 		return claims;
 	}
+
+	
+//	TODO check postId for all endpoints of favorites
+	@Override
+	public List<String> addFavorite(String userLogin, String favorite) {
+		UserAccount userAccount = userAccountRepository.findById(userLogin).orElseThrow(NotFoundException::new);
+		userAccount.addFavorite(favorite);		
+		userAccountRepository.save(userAccount);
+		return userAccount.getFavorites();
+	}
+
+	@Override
+	public List<String> removeFavorite(String userLogin, String favorite) {
+		UserAccount userAccount = userAccountRepository.findById(userLogin).orElseThrow(NotFoundException::new);
+		userAccount.addFavorite(favorite);		
+		userAccountRepository.save(userAccount);
+		return userAccount.getFavorites();
+	}
+
+	@Override
+	public List<String> getUserFavorite(String userLogin) {
+		UserAccount userAccount = userAccountRepository.findById(userLogin).orElseThrow(NotFoundException::new);
+		return userAccount.getFavorites();
+	}	
 	
 }

@@ -1,6 +1,6 @@
 package telran.ProPets.dto;
 
-import java.util.List;
+import java.util.Set;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +12,6 @@ public class UserRegisterResponseDto {
 	String email;	
 	String name;
 	String avatar;
-	List<String> roles;
+	Set<String> roles;
 
 }

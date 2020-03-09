@@ -3,6 +3,7 @@ package telran.ProPets.security.filter;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -44,7 +45,7 @@ public class AdminAuthorizationFilter implements Filter {
 		chain.doFilter(request, response);
 	}
 	
-	private boolean checkPointCut(List<String> roles, String path) {
+	private boolean checkPointCut(Set<String> roles, String path) {
 		boolean check = !roles.contains("Administrator") && path.matches(".+/role/.+");		
 		return check;
 	}

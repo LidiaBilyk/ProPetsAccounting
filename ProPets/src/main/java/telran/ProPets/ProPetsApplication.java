@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.RestController;
 
 import telran.ProPets.dao.UserAccountRepository;
 import telran.ProPets.model.UserAccount;
@@ -23,10 +22,13 @@ public class ProPetsApplication implements CommandLineRunner{
 	@Override
 	public void run(String... args) throws Exception {
 		if (!userAccountRepository.existsById("admin")) {
+			String avatar = "https://www.gravatar.com/avatar/0?d=mp";
 			String hashPassword = BCrypt.hashpw("admin", BCrypt.gensalt());
 			UserAccount admin = UserAccount.builder()
 					.email("admin")
 					.password(hashPassword)
+					.name("admin")
+					.avatar(avatar)
 					.role("User")
 					.role("Moderator")
 					.role("Administrator")					

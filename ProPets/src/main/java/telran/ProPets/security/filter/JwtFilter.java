@@ -84,8 +84,8 @@ public class JwtFilter implements Filter {
 	}
 	
 	private boolean checkPointCut(String path, String method) {
-		boolean check = path.matches("/\\w*/account/v1") && "Post".equalsIgnoreCase(method);
-		check = check || path.startsWith("/h2") || path.matches("/\\w*/account/v1/login") || path.matches(".*/token/validation");
+		boolean check = path.matches(".*/v1") && "Post".equalsIgnoreCase(method);
+		check = check || path.startsWith("/h2") || path.matches(".*/login") || path.matches(".*/token/validation");
 		return check;
 	}
 	

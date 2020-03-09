@@ -2,6 +2,7 @@ package telran.ProPets.controller;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,14 +22,14 @@ import telran.ProPets.dto.UserRegisterResponseDto;
 import telran.ProPets.service.UserAccountService;
 
 @RestController
-@RequestMapping("{lang}/account/v1")
+@RequestMapping("/account/{lang}/v1")
 public class UserAccountController {
 	
 	@Autowired
 	UserAccountService userAccountService;
 	
 	@PostMapping
-	public UserRegisterResponseDto registerUser(@RequestBody UserRegisterDto userRegisterDto) {
+	public ResponseEntity<UserRegisterResponseDto> registerUser(@RequestBody UserRegisterDto userRegisterDto) {
 		return userAccountService.registerUser(userRegisterDto);
 	}
 
@@ -53,12 +54,12 @@ public class UserAccountController {
 	}
 	
 	@PutMapping("/{login:.*}/role/{role}")
-	public List<String> addRole(@PathVariable String login, @PathVariable String role, @RequestHeader(value = "X-token") String token) {		
+	public Set<String> addRole(@PathVariable String login, @PathVariable String role, @RequestHeader(value = "X-token") String token) {		
 		return userAccountService.addRole(login, role);
 	}
 	
 	@DeleteMapping("/{login:.*}/role/{role}")
-	public List<String> removeRole(@PathVariable String login, @PathVariable String role, @RequestHeader(value = "X-token") String token) {		
+	public Set<String> removeRole(@PathVariable String login, @PathVariable String role, @RequestHeader(value = "X-token") String token) {		
 		return userAccountService.removeRole(login, role);
 	}
 	
@@ -68,8 +69,22 @@ public class UserAccountController {
 	}
 	
 	@GetMapping("/token/validation")
-	public ResponseEntity<String> tokenValidation(@RequestHeader(value = "X-Token")String token) {
-		return userAccountService.checkJwt(token);
-		
+	public ResponseEntity<String> tokenValidation(@RequestHeader(value = "X-Token") String token) {
+		return userAccountService.checkJwt(token);		
+	}
+	
+	@PutMapping("/{login}/favorite/{favorite}")
+	public List<String> addFavorite(Principal principal, @PathVariable String favorite, @RequestHeader(value = "X-Token") String token) {
+		return userAccountService.addFavorite(principal.getName(), favorite);
+	}
+	
+	@DeleteMapping("/{login}/favorite/{favorite}")
+	public List<String> removeFavorite(Principal principal, @PathVariable String favorite, @RequestHeader(value = "X-Token") String token) {
+		return userAccountService.removeFavorite(principal.getName(), favorite);
+	}
+	
+	@GetMapping("/{login}/favorites/")
+	public List<String> getUserFavorite(Principal principal, @RequestHeader(value = "X-Token") String token) {
+		return userAccountService.getUserFavorite(principal.getName());
 	}
 }

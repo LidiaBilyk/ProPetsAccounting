@@ -45,7 +45,7 @@ public class AuthenticationFilter implements Filter {
 		String path = request.getServletPath();		
 		String auth = request.getHeader("Authorization");		
 		
-		if (path.matches("/\\w*/account/v1/login")) {			
+		if (path.matches(".*/login")) {			
 			UserAccountCredentials credentials = null;
 			try {
 				credentials = tokenDecode(auth);
