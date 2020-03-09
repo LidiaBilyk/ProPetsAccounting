@@ -22,7 +22,7 @@ import telran.ProPets.dto.UserRegisterResponseDto;
 import telran.ProPets.service.UserAccountService;
 
 @RestController
-@RequestMapping("/account/{lang}/v1")
+@RequestMapping("/{lang}/v1")
 public class UserAccountController {
 	
 	@Autowired
