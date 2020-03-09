@@ -83,7 +83,7 @@ public class AuthenticationFilter implements Filter {
 	}
 
 	public String createJwt(String login) {
-		long term = 900000;
+		long term = 86400000;
 		String secret = "123_Password";
 		SignatureAlgorithm signatureAlgotithm = SignatureAlgorithm.HS256;
 		long nowMillis = System.currentTimeMillis();
@@ -98,15 +98,8 @@ public class AuthenticationFilter implements Filter {
 				.setExpiration(exp)
 				.signWith(signatureAlgotithm,
 				signingKey);
-
 		return jwtBuilder.compact();
 	}
-
-//	private boolean checkPointCut(String path, String method) {
-//		boolean check = path.matches("/\\w*/account/v1") && "Post".equalsIgnoreCase(method);
-//		check = check || path.startsWith("/h2");
-//		return check;
-//	}
 
 	private class WrapperRequest extends HttpServletRequestWrapper {
 

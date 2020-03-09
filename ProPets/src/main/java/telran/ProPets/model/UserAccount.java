@@ -41,7 +41,7 @@ public class UserAccount implements Serializable{
 	@ElementCollection(fetch = FetchType.EAGER)
 	Set<String> roles;
 	@Singular
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.EAGER)
 	List<String> favorites;
 	boolean block;
 	

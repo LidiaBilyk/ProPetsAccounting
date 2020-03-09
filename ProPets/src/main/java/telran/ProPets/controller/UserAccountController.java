@@ -83,7 +83,7 @@ public class UserAccountController {
 		return userAccountService.removeFavorite(principal.getName(), favorite);
 	}
 	
-	@GetMapping("/{login:.*}/favorites/")
+	@GetMapping("/{login:.*}/favorites")
 	public List<String> getUserFavorite(Principal principal, @RequestHeader(value = "X-Token") String token) {
 		return userAccountService.getUserFavorite(principal.getName());
 	}

@@ -168,7 +168,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 	}
 
 	public String createJwt(String login, String secret) {
-		long term = 900000;
+		long term = 86400000;;
 		SignatureAlgorithm signatureAlgotithm = SignatureAlgorithm.HS256;
 		long nowMillis = System.currentTimeMillis();
 		Date now = new Date(nowMillis);
