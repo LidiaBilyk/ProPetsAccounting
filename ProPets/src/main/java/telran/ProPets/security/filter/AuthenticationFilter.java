@@ -47,12 +47,12 @@ public class AuthenticationFilter implements Filter {
 		
 		if (path.matches(".*/login")) {			
 			UserAccountCredentials credentials = null;
-			try {
+//			try {
 				credentials = tokenDecode(auth);
-			} catch (Exception e) {				
-				response.sendError(401, "Header Authorization is not valid");
-				return;
-			}
+//			} catch (Exception e) {				
+//				response.sendError(401, "Header Authorization is not valid");
+//				return;
+//			}
 			UserAccount userAccount = repository.findById(credentials.getLogin()).orElse(null);
 			if (userAccount == null) {
 				response.sendError(401, "User not found");
