@@ -51,6 +51,7 @@ public class AuthenticationFilter implements Filter {
 				credentials = tokenDecode(auth);
 			} catch (Exception e) {	
 				e.printStackTrace();
+				
 //				response.sendError(401, "Header Authorization is not valid");
 //				return;
 			}
