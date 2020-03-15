@@ -152,11 +152,11 @@ public class UserAccountServiceImpl implements UserAccountService {
 		Claims claims = null;		
 		try {
 		claims = verifyJwt(token, secret);
-		} catch (Exception e) {			
+		} catch (Exception e) {				
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}			
 		UserAccount userAccount = userAccountRepository.findById(claims.getSubject()).orElse(null);		
-		if (userAccount == null) {
+		if (userAccount == null) {			
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 		String jwt = createJwt(claims.getSubject(), secret);
@@ -164,6 +164,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		headers.add("X-Token", jwt);
 		headers.add("X-Avatar", userAccount.getAvatar());
 		headers.add("X-UserName", userAccount.getName());
+		headers.add("X-Login", userAccount.getEmail());
 		return new ResponseEntity<>(headers, HttpStatus.OK);
 	}
 

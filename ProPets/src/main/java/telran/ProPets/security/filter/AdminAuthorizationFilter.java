@@ -37,7 +37,7 @@ public class AdminAuthorizationFilter implements Filter {
 		Principal principal = request.getUserPrincipal();		
 		if (principal != null) {
 			UserAccount userAccount = repository.findById(principal.getName()).get();			
-			if (checkPointCut(userAccount.getRoles(),path)) {
+			if (checkPointCut(userAccount.getRoles(),path)) {				
 				response.sendError(401, "Header Authorization is not valid");
 				return;				
 			} 
