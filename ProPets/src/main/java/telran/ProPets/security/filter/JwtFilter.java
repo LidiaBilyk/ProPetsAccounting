@@ -8,6 +8,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import telran.ProPets.configuration.AccountingConfiguration;
 
 import java.io.IOException;
 import java.security.Key;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +32,8 @@ import org.springframework.stereotype.Service;
 @Order(20)
 public class JwtFilter implements Filter {
 	
-	String secret = "123_Password";
+	@Autowired
+	AccountingConfiguration accountingConfiguration;
 	
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
@@ -57,15 +60,14 @@ public class JwtFilter implements Filter {
 		chain.doFilter(request, response);
 	}
 	
-	public String createJwt(String login) {
-		long term = 900000;
+	public String createJwt(String login) {		
 		
 		SignatureAlgorithm signatureAlgotithm = SignatureAlgorithm.HS256;
 		long nowMillis = System.currentTimeMillis();
 		Date now = new Date(nowMillis);
-		long expMillis = nowMillis + term;
+		long expMillis = nowMillis + accountingConfiguration.getTerm();
 		Date exp = new Date(expMillis);
-		byte[] keySecret = DatatypeConverter.parseBase64Binary(secret);
+		byte[] keySecret = DatatypeConverter.parseBase64Binary(accountingConfiguration.getSecret());
 		Key signingKey = new SecretKeySpec(keySecret, signatureAlgotithm.getJcaName());
 		JwtBuilder jwtBuilder = Jwts.builder()
 				.setIssuedAt(now)
@@ -78,7 +80,7 @@ public class JwtFilter implements Filter {
 	
 	public Claims verifyJwt(String jwt) {
 		Claims claims = Jwts.parser()
-				.setSigningKey(DatatypeConverter.parseBase64Binary(secret))
+				.setSigningKey(DatatypeConverter.parseBase64Binary(accountingConfiguration.getSecret()))
 				.parseClaimsJws(jwt).getBody();										
 		return claims;
 	}
