@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import telran.ProPets.configuration.AccountingConfiguration;
 import telran.ProPets.dao.UserAccountRepository;
 import telran.ProPets.exceptions.UserAuthentificationException;
 import telran.ProPets.model.UserAccount;
@@ -34,6 +35,8 @@ import telran.ProPets.service.UserAccountCredentials;
 @Order(10)
 public class AuthenticationFilter implements Filter {
 
+	@Autowired
+	AccountingConfiguration accountingConfiguration;
 	@Autowired
 	UserAccountRepository repository;
 
@@ -83,14 +86,13 @@ public class AuthenticationFilter implements Filter {
 	}
 
 	public String createJwt(String login) {
-		long term = 86400000;
-		String secret = "123_Password";
+
 		SignatureAlgorithm signatureAlgotithm = SignatureAlgorithm.HS256;
 		long nowMillis = System.currentTimeMillis();
 		Date now = new Date(nowMillis);
-		long expMillis = nowMillis + term;
+		long expMillis = nowMillis + accountingConfiguration.getTerm();
 		Date exp = new Date(expMillis);
-		byte[] keySecret = DatatypeConverter.parseBase64Binary(secret);
+		byte[] keySecret = DatatypeConverter.parseBase64Binary(accountingConfiguration.getSecret());
 		Key signingKey = new SecretKeySpec(keySecret, signatureAlgotithm.getJcaName());
 		JwtBuilder jwtBuilder = Jwts.builder()
 				.setIssuedAt(now)

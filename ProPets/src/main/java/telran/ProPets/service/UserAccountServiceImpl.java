@@ -19,6 +19,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import telran.ProPets.configuration.AccountingConfiguration;
 import telran.ProPets.dao.UserAccountRepository;
 import telran.ProPets.dto.UserProfileDto;
 import telran.ProPets.dto.UserRegisterDto;
@@ -31,7 +32,8 @@ import telran.ProPets.model.UserAccount;
 @Service
 public class UserAccountServiceImpl implements UserAccountService {
 	
-	String secret = "123_Password";	
+	@Autowired
+	AccountingConfiguration accountingConfiguration;
 
 	@Autowired
 	UserAccountRepository userAccountRepository;
@@ -51,7 +53,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 				.avatar(avatar)
 				.build();
 		UserRegisterResponseDto userRegisterResponseDto = userAccountToUserRegisterResponseDto(userAccountRepository.save(userAccount));
-		String jwt = createJwt(userRegisterDto.getEmail(), secret);
+		String jwt = createJwt(userRegisterDto.getEmail(), accountingConfiguration.getSecret());
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("X-Token", jwt);
 		return new ResponseEntity<UserRegisterResponseDto>(userRegisterResponseDto, headers, HttpStatus.OK);		 
@@ -111,7 +113,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 
 	}
 
-	@Transactional
+//	@Transactional
 	@Override
 	public UserProfileDto deleteUser(String login) {
 		UserAccount userAccount = userAccountRepository.findById(login).get();
@@ -151,7 +153,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 	public ResponseEntity<String> checkJwt(String token) {					
 		Claims claims = null;		
 		try {
-		claims = verifyJwt(token, secret);
+		claims = verifyJwt(token, accountingConfiguration.getSecret());
 		} catch (Exception e) {				
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}			
@@ -159,7 +161,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		if (userAccount == null) {			
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
-		String jwt = createJwt(claims.getSubject(), secret);
+		String jwt = createJwt(claims.getSubject(), accountingConfiguration.getSecret());
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("X-Token", jwt);
 		headers.add("X-Avatar", userAccount.getAvatar());
@@ -169,11 +171,11 @@ public class UserAccountServiceImpl implements UserAccountService {
 	}
 
 	public String createJwt(String login, String secret) {
-		long term = 86400000;;
+		
 		SignatureAlgorithm signatureAlgotithm = SignatureAlgorithm.HS256;
 		long nowMillis = System.currentTimeMillis();
 		Date now = new Date(nowMillis);
-		long expMillis = nowMillis + term;
+		long expMillis = nowMillis + accountingConfiguration.getTerm();
 		Date exp = new Date(expMillis);
 		byte[] keySecret = DatatypeConverter.parseBase64Binary(secret);
 		Key signingKey = new SecretKeySpec(keySecret, signatureAlgotithm.getJcaName());

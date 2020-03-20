@@ -4,10 +4,14 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
+import org.springframework.data.annotation.Id;
+
+//import javax.persistence.ElementCollection;
+//import javax.persistence.Entity;
+//import javax.persistence.FetchType;
+//import javax.persistence.Id;
+
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +28,8 @@ import lombok.Singular;
 @Setter
 @Builder
 @EqualsAndHashCode(of = {"email"})
-@Entity
+//@Entity
+@Document(collection = "users")
 public class UserAccount implements Serializable{
 
 	/**
@@ -38,10 +43,10 @@ public class UserAccount implements Serializable{
 	String avatar;
 	String phone;
 	@Singular
-	@ElementCollection(fetch = FetchType.EAGER)
+//	@ElementCollection(fetch = FetchType.EAGER)
 	Set<String> roles;
 	@Singular
-	@ElementCollection(fetch = FetchType.EAGER)
+//	@ElementCollection(fetch = FetchType.EAGER)
 	List<String> favorites;
 	boolean block;
 	
