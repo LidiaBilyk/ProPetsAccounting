@@ -30,6 +30,7 @@ public class UserAccountController {
 	@Autowired
 	UserAccountService userAccountService;
 	
+	@CrossOrigin(origins = "*")
 	@PostMapping
 	public ResponseEntity<UserRegisterResponseDto> registerUser(@RequestBody UserRegisterDto userRegisterDto) {
 		return userAccountService.registerUser(userRegisterDto);
