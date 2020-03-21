@@ -53,6 +53,7 @@ public class UserAccountController {
 		return userAccountService.updateUser(principal.getName(), userProfileDto);
 	}
 	
+	@CrossOrigin(origins = "*", methods = RequestMethod.DELETE)
 	@DeleteMapping
 	public UserProfileDto deleteUser(Principal principal, @RequestHeader("X-token") String token) {
 		return userAccountService.deleteUser(principal.getName());
