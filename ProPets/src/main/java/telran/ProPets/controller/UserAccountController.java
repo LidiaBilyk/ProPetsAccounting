@@ -24,7 +24,7 @@ import telran.ProPets.dto.UserRegisterResponseDto;
 import telran.ProPets.service.UserAccountService;
 
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+
 
 @RequestMapping("/{lang}/v1")
 public class UserAccountController {
@@ -32,7 +32,7 @@ public class UserAccountController {
 	@Autowired
 	UserAccountService userAccountService;
 	
-	@CrossOrigin(origins = "*", methods = RequestMethod.POST)
+
 	@PostMapping
 	public ResponseEntity<UserRegisterResponseDto> registerUser(@RequestBody UserRegisterDto userRegisterDto) {
 		return userAccountService.registerUser(userRegisterDto);
@@ -43,7 +43,7 @@ public class UserAccountController {
 		return userAccountService.userLogin(principal.getName());
 	}
 	
-	@CrossOrigin(origins = "*", methods = RequestMethod.GET)
+	
 	@GetMapping("/{login:.*}/info")
 	public UserProfileDto getUserById(@PathVariable String login, @RequestHeader("X-token") String token) {		
 		return userAccountService.getUserById(login);
@@ -54,7 +54,7 @@ public class UserAccountController {
 		return userAccountService.updateUser(principal.getName(), userProfileDto);
 	}
 	
-	@CrossOrigin(origins = "*", methods = RequestMethod.DELETE)
+	
 	@DeleteMapping
 	public UserProfileDto deleteUser(Principal principal, @RequestHeader("X-token") String token) {
 		return userAccountService.deleteUser(principal.getName());
