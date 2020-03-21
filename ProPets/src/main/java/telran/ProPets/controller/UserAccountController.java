@@ -24,7 +24,7 @@ import telran.ProPets.dto.UserRegisterResponseDto;
 import telran.ProPets.service.UserAccountService;
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 
 @RequestMapping("/{lang}/v1")
 public class UserAccountController {
@@ -43,6 +43,7 @@ public class UserAccountController {
 		return userAccountService.userLogin(principal.getName());
 	}
 	
+	@CrossOrigin(origins = "*", methods = RequestMethod.GET)
 	@GetMapping("/{login:.*}/info")
 	public UserProfileDto getUserById(@PathVariable String login, @RequestHeader("X-token") String token) {		
 		return userAccountService.getUserById(login);
