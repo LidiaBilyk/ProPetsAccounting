@@ -30,61 +30,73 @@ public class UserAccountController {
 	@Autowired
 	UserAccountService userAccountService;
 	
+	@CrossOrigin
 	@PostMapping
 	public ResponseEntity<UserRegisterResponseDto> registerUser(@RequestBody UserRegisterDto userRegisterDto) {
 		return userAccountService.registerUser(userRegisterDto);
 	}
 
+	@CrossOrigin
 	@PostMapping("/login")
 	public UserProfileDto userLogin(Principal principal) {
 		return userAccountService.userLogin(principal.getName());
 	}
 	
+	@CrossOrigin
 	@GetMapping("/{login:.*}/info")
 	public UserProfileDto getUserById(@PathVariable String login, @RequestHeader("X-token") String token) {		
 		return userAccountService.getUserById(login);
 	}
 	
+	@CrossOrigin
 	@PutMapping
 	public UserProfileDto updateUser(Principal principal, @RequestBody UserProfileDto userProfileDto, @RequestHeader("X-token") String token) {
 		return userAccountService.updateUser(principal.getName(), userProfileDto);
 	}
 	
+	@CrossOrigin
 	@DeleteMapping
 	public UserProfileDto deleteUser(Principal principal, @RequestHeader("X-token") String token) {
 		return userAccountService.deleteUser(principal.getName());
 	}
 	
+	@CrossOrigin
 	@PutMapping("/{login:.*}/role/{role}")
 	public Set<String> addRole(@PathVariable String login, @PathVariable String role, @RequestHeader("X-token") String token) {		
 		return userAccountService.addRole(login, role);
 	}
 	
+	@CrossOrigin
 	@DeleteMapping("/{login:.*}/role/{role}")
 	public Set<String> removeRole(@PathVariable String login, @PathVariable String role, @RequestHeader("X-token") String token) {		
 		return userAccountService.removeRole(login, role);
 	}
 	
+	@CrossOrigin
 	@PutMapping("/{login:.*}/block/{block}")
 	public boolean blockUser(@PathVariable String login, @PathVariable boolean block, @RequestHeader("X-token") String token) {
 		return userAccountService.blockUser(login, block);
 	}
 	
+	@CrossOrigin
 	@GetMapping("/token/validation")
 	public ResponseEntity<String> tokenValidation(@RequestHeader("X-Token") String token) {
 		return userAccountService.checkJwt(token);		
 	}
 	
+	@CrossOrigin
 	@PutMapping("/favorite/{favorite}")
 	public List<String> addFavorite(Principal principal, @PathVariable String favorite, @RequestHeader("X-Token") String token) {
 		return userAccountService.addFavorite(principal.getName(), favorite);
 	}
 	
+	@CrossOrigin
 	@DeleteMapping("/favorite/{favorite}")
 	public List<String> removeFavorite(Principal principal, @PathVariable String favorite, @RequestHeader("X-Token") String token) {
 		return userAccountService.removeFavorite(principal.getName(), favorite);
 	}
 	
+	@CrossOrigin
 	@GetMapping("/favorites")
 	public List<String> getUserFavorite(Principal principal, @RequestHeader("X-Token") String token) {
 		return userAccountService.getUserFavorite(principal.getName());
