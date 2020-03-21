@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-@Order(40)
+@Order(9)
 public class CorsFilter implements Filter{
 
 	@Override
