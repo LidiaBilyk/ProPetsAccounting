@@ -24,7 +24,6 @@ import telran.ProPets.dto.UserRegisterResponseDto;
 import telran.ProPets.service.UserAccountService;
 
 @RestController
-@CrossOrigin
 
 @RequestMapping("/{lang}/v1")
 public class UserAccountController {
