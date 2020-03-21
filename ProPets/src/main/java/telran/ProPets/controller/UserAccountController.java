@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import telran.ProPets.dto.UserProfileDto;
@@ -24,13 +25,14 @@ import telran.ProPets.service.UserAccountService;
 
 @RestController
 @CrossOrigin(origins = "*")
+
 @RequestMapping("/{lang}/v1")
 public class UserAccountController {
 	
 	@Autowired
 	UserAccountService userAccountService;
 	
-	@CrossOrigin(origins = "*")
+	@CrossOrigin(origins = "*", methods = RequestMethod.POST)
 	@PostMapping
 	public ResponseEntity<UserRegisterResponseDto> registerUser(@RequestBody UserRegisterDto userRegisterDto) {
 		return userAccountService.registerUser(userRegisterDto);
