@@ -1,6 +1,8 @@
 package telran.ProPets.service;
 
 import java.security.Key;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -170,19 +172,16 @@ public class UserAccountServiceImpl implements UserAccountService {
 		return new ResponseEntity<>(headers, HttpStatus.OK);
 	}
 
-	public String createJwt(String login, String secret) {
-		
+	public String createJwt(String login, String secret) {		
 		SignatureAlgorithm signatureAlgotithm = SignatureAlgorithm.HS256;
-		long nowMillis = System.currentTimeMillis();
-		Date now = new Date(nowMillis);
-		long expMillis = nowMillis + accountingConfiguration.getTerm();
-		Date exp = new Date(expMillis);
+		Instant issuedAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+		Instant expiration = issuedAt.plus(accountingConfiguration.getTerm(), ChronoUnit.DAYS);
 		byte[] keySecret = DatatypeConverter.parseBase64Binary(secret);
 		Key signingKey = new SecretKeySpec(keySecret, signatureAlgotithm.getJcaName());
 		JwtBuilder jwtBuilder = Jwts.builder()
-				.setIssuedAt(now)
+				.setIssuedAt(Date.from(issuedAt))
 				.setSubject(login)
-				.setExpiration(exp)
+				.setExpiration(Date.from(expiration))
 				.signWith(signatureAlgotithm, signingKey);
 		return jwtBuilder.compact();
 	}
@@ -198,24 +197,24 @@ public class UserAccountServiceImpl implements UserAccountService {
 	
 //	TODO check postId for all endpoints of favorites
 	@Override
-	public List<String> addFavorite(String userLogin, String favorite) {
-		UserAccount userAccount = userAccountRepository.findById(userLogin).orElseThrow(NotFoundException::new);
+	public List<String> addFavorite(String login, String favorite) {
+		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
 		userAccount.addFavorite(favorite);		
 		userAccountRepository.save(userAccount);
 		return userAccount.getFavorites();
 	}
 
 	@Override
-	public List<String> removeFavorite(String userLogin, String favorite) {
-		UserAccount userAccount = userAccountRepository.findById(userLogin).orElseThrow(NotFoundException::new);
+	public List<String> removeFavorite(String login, String favorite) {
+		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
 		userAccount.removeFavorite(favorite);		
 		userAccountRepository.save(userAccount);
 		return userAccount.getFavorites();
 	}
 
 	@Override
-	public List<String> getUserFavorite(String userLogin) {
-		UserAccount userAccount = userAccountRepository.findById(userLogin).orElseThrow(NotFoundException::new);
+	public List<String> getUserFavorite(String login) {
+		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
 		return userAccount.getFavorites();
 	}	
 	

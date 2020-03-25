@@ -48,15 +48,15 @@ public class UserAccountController {
 		return userAccountService.getUserById(login);
 	}
 	
-	@PutMapping
-	public UserProfileDto updateUser(Principal principal, @RequestBody UserProfileDto userProfileDto, @RequestHeader("X-token") String token) {
-		return userAccountService.updateUser(principal.getName(), userProfileDto);
+	@PutMapping("/{login:.*}")
+	public UserProfileDto updateUser(@PathVariable String login, @RequestBody UserProfileDto userProfileDto, @RequestHeader("X-token") String token) {
+		return userAccountService.updateUser(login, userProfileDto);
 	}
 	
 	
-	@DeleteMapping
-	public UserProfileDto deleteUser(Principal principal, @RequestHeader("X-token") String token) {
-		return userAccountService.deleteUser(principal.getName());
+	@DeleteMapping("/{login:.*}")
+	public UserProfileDto deleteUser(@PathVariable String login, @RequestHeader("X-token") String token) {
+		return userAccountService.deleteUser(login);
 	}
 	
 	@PutMapping("/{login:.*}/role/{role}")
@@ -79,18 +79,18 @@ public class UserAccountController {
 		return userAccountService.checkJwt(token);		
 	}
 	
-	@PutMapping("/favorite/{favorite}")
-	public List<String> addFavorite(Principal principal, @PathVariable String favorite, @RequestHeader("X-Token") String token) {
-		return userAccountService.addFavorite(principal.getName(), favorite);
+	@PutMapping("/{login:.*}/favorite/{favorite}")
+	public List<String> addFavorite(@PathVariable String login, @PathVariable String favorite, @RequestHeader("X-Token") String token) {
+		return userAccountService.addFavorite(login, favorite);
 	}
 	
-	@DeleteMapping("/favorite/{favorite}")
-	public List<String> removeFavorite(Principal principal, @PathVariable String favorite, @RequestHeader("X-Token") String token) {
-		return userAccountService.removeFavorite(principal.getName(), favorite);
+	@DeleteMapping("/{login:.*}/favorite/{favorite}")
+	public List<String> removeFavorite(@PathVariable String login, @PathVariable String favorite, @RequestHeader("X-Token") String token) {
+		return userAccountService.removeFavorite(login, favorite);
 	}
 	
-	@GetMapping("/favorites")
-	public List<String> getUserFavorite(Principal principal, @RequestHeader("X-Token") String token) {
-		return userAccountService.getUserFavorite(principal.getName());
+	@GetMapping("/{login:.*}/favorites")
+	public List<String> getUserFavorite(@PathVariable String login, @RequestHeader("X-Token") String token) {
+		return userAccountService.getUserFavorite(login);
 	}
 }

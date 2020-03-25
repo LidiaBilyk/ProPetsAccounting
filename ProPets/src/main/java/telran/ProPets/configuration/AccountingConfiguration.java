@@ -16,5 +16,7 @@ public class AccountingConfiguration {
 	String secret;
 	@Value("${term}")
 	long term;
+	@Value("${template}")
+	String template;
 
 }

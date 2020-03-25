@@ -3,6 +3,8 @@ package telran.ProPets.security.filter;
 import java.io.IOException;
 import java.security.Key;
 import java.security.Principal;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
 
@@ -89,15 +91,14 @@ public class AuthenticationFilter implements Filter {
 
 		SignatureAlgorithm signatureAlgotithm = SignatureAlgorithm.HS256;
 		long nowMillis = System.currentTimeMillis();
-		Date now = new Date(nowMillis);
-		long expMillis = nowMillis + accountingConfiguration.getTerm();
-		Date exp = new Date(expMillis);
+		Instant issuedAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+		Instant expiration = issuedAt.plus(accountingConfiguration.getTerm(), ChronoUnit.DAYS);
 		byte[] keySecret = DatatypeConverter.parseBase64Binary(accountingConfiguration.getSecret());
 		Key signingKey = new SecretKeySpec(keySecret, signatureAlgotithm.getJcaName());
 		JwtBuilder jwtBuilder = Jwts.builder()
-				.setIssuedAt(now)
+				.setIssuedAt(Date.from(issuedAt))
 				.setSubject(login)
-				.setExpiration(exp)
+				.setExpiration(Date.from(expiration))
 				.signWith(signatureAlgotithm,
 				signingKey);
 		return jwtBuilder.compact();

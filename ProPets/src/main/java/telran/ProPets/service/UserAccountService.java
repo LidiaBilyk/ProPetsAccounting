@@ -20,8 +20,8 @@ public interface UserAccountService {
 	Set<String> removeRole(String userLogin, String role);
 	boolean blockUser(String login, boolean block);
 	ResponseEntity<String> checkJwt(String token);
-	List<String> addFavorite(String userLogin, String favorite);
-	List<String> removeFavorite(String userLogin, String favorite);
-	List<String> getUserFavorite(String userLogin);
+	List<String> addFavorite(String login, String favorite);
+	List<String> removeFavorite(String login, String favorite);
+	List<String> getUserFavorite(String login);
 
 }

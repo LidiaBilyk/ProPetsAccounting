@@ -13,6 +13,8 @@ import telran.ProPets.configuration.AccountingConfiguration;
 import java.io.IOException;
 import java.security.Key;
 import java.security.Principal;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.Filter;
@@ -27,6 +29,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriTemplate;
+
 
 @Service
 @Order(20)
@@ -41,17 +45,25 @@ public class JwtFilter implements Filter {
 		HttpServletResponse response = (HttpServletResponse) resp;
 		String path = request.getServletPath();
 		String method = request.getMethod();
-		String auth = request.getHeader("X-Token");		
+		String auth = request.getHeader("X-Token");	
 		
 		if (!checkPointCut(path, method)) {			
 			Claims claims = null;
 			try {				
 			claims = verifyJwt(auth);
-			} catch (Exception e) {				
+			} catch (Exception e) {					
 				response.sendError(401, "Header X-Token is not valid");
 				return;
 			}			
 			String login = claims.getSubject();
+			UriTemplate template = new UriTemplate(accountingConfiguration.getTemplate());		
+			String pathLogin = template.match(request.getRequestURI()).get("login");			
+			if (!(path.matches(".+/role/.+") || path.matches(".+/block/.+"))) {
+				if (!login.equals(pathLogin)) {
+					response.sendError(403, "Access denied");
+					return;
+				}
+			}
 			String jwt = createJwt(login);
 			response.addHeader("X-Token", jwt);				
 			chain.doFilter(new WrapperRequest(request, login), response);
@@ -63,16 +75,14 @@ public class JwtFilter implements Filter {
 	public String createJwt(String login) {		
 		
 		SignatureAlgorithm signatureAlgotithm = SignatureAlgorithm.HS256;
-		long nowMillis = System.currentTimeMillis();
-		Date now = new Date(nowMillis);
-		long expMillis = nowMillis + accountingConfiguration.getTerm();
-		Date exp = new Date(expMillis);
+		Instant issuedAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+		Instant expiration = issuedAt.plus(accountingConfiguration.getTerm(), ChronoUnit.DAYS);
 		byte[] keySecret = DatatypeConverter.parseBase64Binary(accountingConfiguration.getSecret());
 		Key signingKey = new SecretKeySpec(keySecret, signatureAlgotithm.getJcaName());
 		JwtBuilder jwtBuilder = Jwts.builder()
-				.setIssuedAt(now)
+				.setIssuedAt(Date.from(issuedAt))
 				.setSubject(login)
-				.setExpiration(exp)
+				.setExpiration(Date.from(expiration))
 				.signWith(signatureAlgotithm, signingKey);	
 	
 		return jwtBuilder.compact();
@@ -87,7 +97,7 @@ public class JwtFilter implements Filter {
 	
 	private boolean checkPointCut(String path, String method) {
 		boolean check = path.matches(".*/v1") && "Post".equalsIgnoreCase(method);
-		check = check || path.matches(".*/h2.*") || path.matches(".*/login") || path.matches(".*/token/validation");
+		check = check || path.matches(".*/login") || path.matches(".*/token/validation");
 		return check;
 	}
 	
