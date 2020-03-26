@@ -21,12 +21,12 @@ public class CorsFilter implements Filter {
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
 			throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) servletRequest;
-		HttpServletResponse resp = (HttpServletResponse) servletResponse;
-		resp.addHeader("Access-Control-Allow-Origin", "*");
-		resp.addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD, PUT, POST");
-		resp.addHeader("Access-Control-Allow-Headers", "Content-Type");
+		HttpServletResponse response = (HttpServletResponse) servletResponse;
+		response.addHeader("Access-Control-Allow-Origin", "*");
+		response.addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD, PUT, POST");
+		response.addHeader("Access-Control-Allow-Headers", "Content-Type, X-Token, X-Avatar, X-UserName, X-Login");
 		if (request.getMethod().equals("OPTIONS")) {
-			resp.setStatus(HttpServletResponse.SC_ACCEPTED);
+			response.setStatus(HttpServletResponse.SC_ACCEPTED);
 			return;
 		}
 		chain.doFilter(request, servletResponse);
