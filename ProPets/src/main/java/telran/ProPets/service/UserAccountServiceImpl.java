@@ -105,6 +105,9 @@ public class UserAccountServiceImpl implements UserAccountService {
 		if (userProfileDto.getPhone() != null) {
 			userAccount.setPhone(userProfileDto.getPhone());
 		}
+		if (userProfileDto.getAvatar() != null) {
+			userAccount.setAvatar(userProfileDto.getAvatar());
+		}
 		userAccountRepository.save(userAccount);
 		return userAccountToUserProfileDto(userAccount);
 	}
