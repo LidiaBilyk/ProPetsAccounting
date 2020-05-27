@@ -1,15 +1,12 @@
 package telran.ProPets.model;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
-
-//import javax.persistence.ElementCollection;
-//import javax.persistence.Entity;
-//import javax.persistence.FetchType;
-//import javax.persistence.Id;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -28,7 +25,6 @@ import lombok.Singular;
 @Setter
 @Builder
 @EqualsAndHashCode(of = {"email"})
-//@Entity
 @Document(collection = "users")
 public class UserAccount implements Serializable{
 
@@ -43,29 +39,35 @@ public class UserAccount implements Serializable{
 	String avatar;
 	String phone;
 	@Singular
-//	@ElementCollection(fetch = FetchType.EAGER)
-	Set<String> roles;
-	@Singular
-//	@ElementCollection(fetch = FetchType.EAGER)
-	List<String> favorites;
+	Set<String> roles;	
+	@Builder.Default
+	Map<String, Set<String>> favorites = new HashMap<>();
+	@Builder.Default
+	Map<String, Set<String>> activities = new HashMap<>();
 	boolean block;
 	
-	
 	public boolean addRole(String role) {
-		return roles.add(role);
-		
+		return roles.add(role);		
 	}
 	
 	public boolean removeRole(String role) {
 		return roles.remove(role);
 	}
 
-	public boolean addFavorite(String favorite) {
-		return favorites.add(favorite);
-		
+	public boolean addFavorite(String serviceName, String favorite) {
+		return favorites.computeIfAbsent(serviceName, k -> new HashSet<>()).add(favorite);		
 	}
 	
-	public boolean removeFavorite(String favorite) {
-		return favorites.remove(favorite);
+	public boolean removeFavorite(String serviceName, String favorite) {
+		return favorites.get(serviceName).remove(favorite);
 	}	
+	
+	public boolean addActivity(String serviceName, String activity) {
+		return activities.computeIfAbsent(serviceName, k -> new HashSet<>()).add(activity);		
+	}
+	
+	public boolean removeActivity(String serviceName, String activity) {
+		return activities.get(serviceName).remove(activity);
+	}
+
 }

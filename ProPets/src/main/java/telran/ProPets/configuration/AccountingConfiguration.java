@@ -18,5 +18,6 @@ public class AccountingConfiguration {
 	long term;
 	@Value("${template}")
 	String template;
-
+	@Value("${avatarUri}")
+	String avatarUri;
 }

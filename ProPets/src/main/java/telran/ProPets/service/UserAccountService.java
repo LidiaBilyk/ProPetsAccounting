@@ -1,27 +1,28 @@
 package telran.ProPets.service;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
 
 import telran.ProPets.dto.UserProfileDto;
 import telran.ProPets.dto.UserRegisterDto;
-import telran.ProPets.dto.UserRegisterResponseDto;
 
 public interface UserAccountService {
-	ResponseEntity<UserRegisterResponseDto> registerUser(UserRegisterDto userRegisterDto);
+	ResponseEntity<UserProfileDto> registerUser(UserRegisterDto userRegisterDto);
 	UserProfileDto userLogin(String login);
 	UserProfileDto getUserById(String login);
-	UserProfileDto updateUser(String login, UserProfileDto userProfileDto);
-	void userLogout(String login);
+	UserProfileDto updateUser(String login, UserProfileDto userProfileDto);	
 	UserProfileDto deleteUser(String login);
 	Set<String> addRole(String userLogin, String role);
 	Set<String> removeRole(String userLogin, String role);
 	boolean blockUser(String login, boolean block);
 	ResponseEntity<String> checkJwt(String token);
-	List<String> addFavorite(String login, String favorite);
-	List<String> removeFavorite(String login, String favorite);
-	List<String> getUserFavorite(String login);
+	void addFavorite(String login, String serviceName, String favorite);
+	void removeFavorite(String login, String serviceName, String favorite);
+	Map<String, Set<String>> getUserFavorite(String login);
+	void addActivity(String login, String serviceName, String activity);
+	void removeActivity(String login, String serviceName, String activity);
+	Map<String, Set<String>> getUserActivity(String login);
 
 }

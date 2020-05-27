@@ -4,7 +4,7 @@ import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -16,7 +16,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
@@ -25,7 +24,6 @@ import telran.ProPets.configuration.AccountingConfiguration;
 import telran.ProPets.dao.UserAccountRepository;
 import telran.ProPets.dto.UserProfileDto;
 import telran.ProPets.dto.UserRegisterDto;
-import telran.ProPets.dto.UserRegisterResponseDto;
 import telran.ProPets.exceptions.ConflictException;
 import telran.ProPets.exceptions.ForbiddenException;
 import telran.ProPets.exceptions.NotFoundException;
@@ -41,11 +39,11 @@ public class UserAccountServiceImpl implements UserAccountService {
 	UserAccountRepository userAccountRepository;
 
 	@Override
-	public ResponseEntity<UserRegisterResponseDto> registerUser(UserRegisterDto userRegisterDto) {
+	public ResponseEntity<UserProfileDto> registerUser(UserRegisterDto userRegisterDto) {
 		if (userAccountRepository.existsById(userRegisterDto.getEmail())) {
 			throw new ConflictException();
 		}
-		String avatar = "https://www.gravatar.com/avatar/0?d=mp";
+		String avatar = accountingConfiguration.getAvatarUri();
 		String hashPassword = BCrypt.hashpw(userRegisterDto.getPassword(), BCrypt.gensalt());
 		UserAccount userAccount = UserAccount.builder()
 				.email(userRegisterDto.getEmail())
@@ -54,21 +52,13 @@ public class UserAccountServiceImpl implements UserAccountService {
 				.role("User")
 				.avatar(avatar)
 				.build();
-		UserRegisterResponseDto userRegisterResponseDto = userAccountToUserRegisterResponseDto(userAccountRepository.save(userAccount));
+		UserProfileDto userProfileDto = userAccountToUserProfileDto(userAccountRepository.save(userAccount));
 		String jwt = createJwt(userRegisterDto.getEmail(), accountingConfiguration.getSecret());
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("X-Token", jwt);
-		return new ResponseEntity<UserRegisterResponseDto>(userRegisterResponseDto, headers, HttpStatus.OK);		 
+		return new ResponseEntity<UserProfileDto>(userProfileDto, headers, HttpStatus.OK);		 
 	}
 
-	private UserRegisterResponseDto userAccountToUserRegisterResponseDto(UserAccount userAccount) {
-		return UserRegisterResponseDto.builder()
-				.email(userAccount.getEmail())
-				.name(userAccount.getName())
-				.avatar(userAccount.getAvatar())
-				.roles(userAccount.getRoles())
-				.build();
-	}
 
 	private UserProfileDto userAccountToUserProfileDto(UserAccount userAccount) {
 		return UserProfileDto.builder()
@@ -113,13 +103,6 @@ public class UserAccountServiceImpl implements UserAccountService {
 	}
 
 	@Override
-	public void userLogout(String login) {
-		// TODO Auto-generated method stub
-
-	}
-
-//	@Transactional
-	@Override
 	public UserProfileDto deleteUser(String login) {
 		UserAccount userAccount = userAccountRepository.findById(login).get();
 		userAccountRepository.deleteById(login);
@@ -155,7 +138,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 	}
 
 	@Override
-	public ResponseEntity<String> checkJwt(String token) {					
+	public ResponseEntity<String> checkJwt(String token) {			
 		Claims claims = null;		
 		try {
 		claims = verifyJwt(token, accountingConfiguration.getSecret());
@@ -169,9 +152,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		String jwt = createJwt(claims.getSubject(), accountingConfiguration.getSecret());
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("X-Token", jwt);
-		headers.add("X-Avatar", userAccount.getAvatar());
-		headers.add("X-UserName", userAccount.getName());
-		headers.add("X-Login", userAccount.getEmail());
+		headers.add("X-Login", userAccount.getEmail());		
 		return new ResponseEntity<>(headers, HttpStatus.OK);
 	}
 
@@ -198,27 +179,47 @@ public class UserAccountServiceImpl implements UserAccountService {
 	}
 
 	
-//	TODO check postId for all endpoints of favorites
 	@Override
-	public List<String> addFavorite(String login, String favorite) {
+	public void addFavorite(String login, String serviceName, String favorite) {		
 		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
-		userAccount.addFavorite(favorite);		
-		userAccountRepository.save(userAccount);
-		return userAccount.getFavorites();
+		userAccount.addFavorite(serviceName, favorite);			
+		userAccountRepository.save(userAccount);		
 	}
 
 	@Override
-	public List<String> removeFavorite(String login, String favorite) {
+	public void removeFavorite(String login, String serviceName, String favorite) {
 		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
-		userAccount.removeFavorite(favorite);		
-		userAccountRepository.save(userAccount);
-		return userAccount.getFavorites();
+		userAccount.removeFavorite(serviceName, favorite);		
+		userAccountRepository.save(userAccount);		
 	}
 
 	@Override
-	public List<String> getUserFavorite(String login) {
+	public Map<String, Set<String>> getUserFavorite(String login) {
 		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
 		return userAccount.getFavorites();
+	}
+
+
+	@Override
+	public void addActivity(String login, String serviceName, String activity) {		
+		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);		
+		userAccount.addActivity(serviceName, activity);			
+		userAccountRepository.save(userAccount);		
+	}
+
+
+	@Override
+	public void removeActivity(String login, String serviceName, String activity) {
+		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
+		userAccount.removeActivity(serviceName, activity);		
+		userAccountRepository.save(userAccount);		
+	}
+
+
+	@Override
+	public Map<String, Set<String>> getUserActivity(String login) {
+		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
+		return userAccount.getActivities();
 	}	
 	
 }

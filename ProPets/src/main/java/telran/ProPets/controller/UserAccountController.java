@@ -1,12 +1,11 @@
 package telran.ProPets.controller;
 
 import java.security.Principal;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,12 +14,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import telran.ProPets.dto.UserProfileDto;
 import telran.ProPets.dto.UserRegisterDto;
-import telran.ProPets.dto.UserRegisterResponseDto;
+
 import telran.ProPets.service.UserAccountService;
 
 @RestController
@@ -33,7 +31,7 @@ public class UserAccountController {
 	
 
 	@PostMapping
-	public ResponseEntity<UserRegisterResponseDto> registerUser(@RequestBody UserRegisterDto userRegisterDto) {
+	public ResponseEntity<UserProfileDto> registerUser(@RequestBody UserRegisterDto userRegisterDto) {
 		return userAccountService.registerUser(userRegisterDto);
 	}
 
@@ -80,17 +78,32 @@ public class UserAccountController {
 	}
 	
 	@PutMapping("/{login:.*}/favorite/{favorite}")
-	public List<String> addFavorite(@PathVariable String login, @PathVariable String favorite, @RequestHeader("X-Token") String token) {
-		return userAccountService.addFavorite(login, favorite);
+	public void addFavorite(@PathVariable String login, @RequestHeader("X-ServiceName") String serviceName, @PathVariable String favorite, @RequestHeader("X-Token") String token) {
+		userAccountService.addFavorite(login, serviceName, favorite);
 	}
 	
 	@DeleteMapping("/{login:.*}/favorite/{favorite}")
-	public List<String> removeFavorite(@PathVariable String login, @PathVariable String favorite, @RequestHeader("X-Token") String token) {
-		return userAccountService.removeFavorite(login, favorite);
+	public void removeFavorite(@PathVariable String login, @RequestHeader("X-ServiceName") String serviceName, @PathVariable String favorite, @RequestHeader("X-Token") String token) {
+		userAccountService.removeFavorite(login, serviceName, favorite);
 	}
 	
 	@GetMapping("/{login:.*}/favorites")
-	public List<String> getUserFavorite(@PathVariable String login, @RequestHeader("X-Token") String token) {
+	public Map<String, Set<String>> getUserFavorites(@PathVariable String login, @RequestHeader("X-Token") String token) {
 		return userAccountService.getUserFavorite(login);
+	}
+	
+	@PutMapping("/{login:.*}/activity/{activity}")
+	public void addActivity(@PathVariable String login, @RequestHeader("X-ServiceName") String serviceName, @PathVariable String activity) {
+		userAccountService.addActivity(login, serviceName, activity);
+	}
+	
+	@DeleteMapping("/{login:.*}/activity/{activity}")
+	public void removeActivity(@PathVariable String login, @RequestHeader("X-ServiceName") String serviceName, @PathVariable String activity) {
+		userAccountService.removeActivity(login, serviceName, activity);
+	}
+	
+	@GetMapping("/{login:.*}/activities")
+	public Map<String, Set<String>> getUserActivities(@PathVariable String login, @RequestHeader("X-Token") String token) {
+		return userAccountService.getUserActivity(login);
 	}
 }

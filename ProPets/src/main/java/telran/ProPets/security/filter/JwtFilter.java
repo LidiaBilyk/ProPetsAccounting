@@ -47,7 +47,7 @@ public class JwtFilter implements Filter {
 		String method = request.getMethod();
 		String auth = request.getHeader("X-Token");	
 		
-		if (!checkPointCut(path, method)) {			
+		if (!checkPointCut(path, method)) {				
 			Claims claims = null;
 			try {				
 			claims = verifyJwt(auth);
@@ -59,13 +59,14 @@ public class JwtFilter implements Filter {
 			UriTemplate template = new UriTemplate(accountingConfiguration.getTemplate());		
 			String pathLogin = template.match(request.getRequestURI()).get("login");			
 			if (!(path.matches(".+/role/.+") || path.matches(".+/block/.+"))) {
-				if (!login.equals(pathLogin)) {
+				if (!login.equals(pathLogin)) {					
 					response.sendError(403, "Access denied");
 					return;
 				}
 			}
 			String jwt = createJwt(login);
-			response.addHeader("X-Token", jwt);				
+			response.addHeader("X-Token", jwt);	
+			response.addHeader("X-Login", login);
 			chain.doFilter(new WrapperRequest(request, login), response);
 			return;
 		}				
@@ -97,7 +98,7 @@ public class JwtFilter implements Filter {
 	
 	private boolean checkPointCut(String path, String method) {
 		boolean check = path.matches(".*/v1") && "Post".equalsIgnoreCase(method);
-		check = check || path.matches(".*/login") || path.matches(".*/token/validation");
+		check = check || path.matches(".*/login") || path.matches(".*/token/validation") || path.matches(".+/favorit.+") || path.matches(".+/activit.+");
 		return check;
 	}
 	
