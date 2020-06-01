@@ -45,8 +45,7 @@ public class JwtFilter implements Filter {
 		HttpServletResponse response = (HttpServletResponse) resp;
 		String path = request.getServletPath();
 		String method = request.getMethod();
-		String auth = request.getHeader("X-Token");	
-		
+		String auth = request.getHeader("X-Token");			
 		if (!checkPointCut(path, method)) {				
 			Claims claims = null;
 			try {				
@@ -65,8 +64,7 @@ public class JwtFilter implements Filter {
 				}
 			}
 			String jwt = createJwt(login);
-			response.addHeader("X-Token", jwt);	
-			response.addHeader("X-Login", login);
+			response.addHeader("X-Token", jwt);				
 			chain.doFilter(new WrapperRequest(request, login), response);
 			return;
 		}				
@@ -98,7 +96,7 @@ public class JwtFilter implements Filter {
 	
 	private boolean checkPointCut(String path, String method) {
 		boolean check = path.matches(".*/v1") && "Post".equalsIgnoreCase(method);
-		check = check || path.matches(".*/login") || path.matches(".*/token/validation") || path.matches(".+/favorit.+") || path.matches(".+/activit.+");
+		check = check || path.matches(".*/login") || path.matches(".*/token/validation") || path.matches(".+/favorit.+") || path.matches(".+/activit.+") || path.matches(".+/userdata");
 		return check;
 	}
 	

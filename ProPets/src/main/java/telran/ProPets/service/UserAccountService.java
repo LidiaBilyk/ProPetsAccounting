@@ -20,9 +20,10 @@ public interface UserAccountService {
 	ResponseEntity<String> checkJwt(String token);
 	void addFavorite(String login, String serviceName, String favorite);
 	void removeFavorite(String login, String serviceName, String favorite);
-	Map<String, Set<String>> getUserFavorite(String login);
+//	Map<String, Set<String>> getUserFavorite(String login);
 	void addActivity(String login, String serviceName, String activity);
 	void removeActivity(String login, String serviceName, String activity);
-	Map<String, Set<String>> getUserActivity(String login);
+//	Map<String, Set<String>> getUserActivity(String login);
+	Map<String, Set<String>> getUserData(String login, boolean dataType);
 
 }

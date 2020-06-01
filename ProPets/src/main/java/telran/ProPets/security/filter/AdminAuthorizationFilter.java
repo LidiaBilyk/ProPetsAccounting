@@ -2,9 +2,7 @@ package telran.ProPets.security.filter;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.List;
 import java.util.Set;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

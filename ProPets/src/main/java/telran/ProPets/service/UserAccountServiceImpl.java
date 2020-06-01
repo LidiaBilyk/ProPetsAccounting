@@ -193,12 +193,11 @@ public class UserAccountServiceImpl implements UserAccountService {
 		userAccountRepository.save(userAccount);		
 	}
 
-	@Override
-	public Map<String, Set<String>> getUserFavorite(String login) {
-		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
-		return userAccount.getFavorites();
-	}
-
+//	@Override
+//	public Map<String, Set<String>> getUserFavorite(String login) {
+//		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
+//		return userAccount.getFavorites();
+//	}
 
 	@Override
 	public void addActivity(String login, String serviceName, String activity) {		
@@ -215,11 +214,16 @@ public class UserAccountServiceImpl implements UserAccountService {
 		userAccountRepository.save(userAccount);		
 	}
 
-
+//	@Override
+//	public Map<String, Set<String>> getUserActivity(String login) {
+//		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
+//		return userAccount.getActivities();
+//	}	
+	
 	@Override
-	public Map<String, Set<String>> getUserActivity(String login) {
+	public Map<String, Set<String>> getUserData(String login, boolean dataType) {
 		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
-		return userAccount.getActivities();
-	}	
+		return dataType? userAccount.getFavorites() : userAccount.getActivities();
+	}
 	
 }
