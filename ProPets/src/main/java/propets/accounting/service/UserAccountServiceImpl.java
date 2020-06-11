@@ -1,4 +1,4 @@
-package telran.ProPets.service;
+package propets.accounting.service;
 
 import java.security.Key;
 import java.time.Instant;
@@ -20,14 +20,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import telran.ProPets.configuration.AccountingConfiguration;
-import telran.ProPets.dao.UserAccountRepository;
-import telran.ProPets.dto.UserProfileDto;
-import telran.ProPets.dto.UserRegisterDto;
-import telran.ProPets.exceptions.ConflictException;
-import telran.ProPets.exceptions.ForbiddenException;
-import telran.ProPets.exceptions.NotFoundException;
-import telran.ProPets.model.UserAccount;
+import propets.accounting.configuration.AccountingConfiguration;
+import propets.accounting.dao.UserAccountRepository;
+import propets.accounting.dto.UserProfileDto;
+import propets.accounting.dto.UserRegisterDto;
+import propets.accounting.exceptions.ConflictException;
+import propets.accounting.exceptions.ForbiddenException;
+import propets.accounting.exceptions.NotFoundException;
+import propets.accounting.model.UserAccount;
 
 @Service
 public class UserAccountServiceImpl implements UserAccountService {

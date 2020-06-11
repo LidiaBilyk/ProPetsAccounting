@@ -1,4 +1,4 @@
-package telran.ProPets.dto;
+package propets.accounting.dto;
 
 import java.util.List;
 

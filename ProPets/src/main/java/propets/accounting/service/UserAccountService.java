@@ -1,12 +1,12 @@
-package telran.ProPets.service;
+package propets.accounting.service;
 
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
 
-import telran.ProPets.dto.UserProfileDto;
-import telran.ProPets.dto.UserRegisterDto;
+import propets.accounting.dto.UserProfileDto;
+import propets.accounting.dto.UserRegisterDto;
 
 public interface UserAccountService {
 	ResponseEntity<UserProfileDto> registerUser(UserRegisterDto userRegisterDto);

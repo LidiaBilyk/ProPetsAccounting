@@ -1,4 +1,4 @@
-package telran.ProPets.security.filter;
+package propets.accounting.security.filter;
 
 import java.io.IOException;
 import java.security.Key;
@@ -27,11 +27,11 @@ import org.springframework.stereotype.Service;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import telran.ProPets.configuration.AccountingConfiguration;
-import telran.ProPets.dao.UserAccountRepository;
-import telran.ProPets.exceptions.UserAuthentificationException;
-import telran.ProPets.model.UserAccount;
-import telran.ProPets.service.UserAccountCredentials;
+import propets.accounting.configuration.AccountingConfiguration;
+import propets.accounting.dao.UserAccountRepository;
+import propets.accounting.exceptions.UserAuthentificationException;
+import propets.accounting.model.UserAccount;
+import propets.accounting.service.UserAccountCredentials;
 
 @Service
 @Order(10)
@@ -88,9 +88,7 @@ public class AuthenticationFilter implements Filter {
 	}
 
 	public String createJwt(String login) {
-
-		SignatureAlgorithm signatureAlgotithm = SignatureAlgorithm.HS256;
-		long nowMillis = System.currentTimeMillis();
+		SignatureAlgorithm signatureAlgotithm = SignatureAlgorithm.HS256;		
 		Instant issuedAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
 		Instant expiration = issuedAt.plus(accountingConfiguration.getTerm(), ChronoUnit.DAYS);
 		byte[] keySecret = DatatypeConverter.parseBase64Binary(accountingConfiguration.getSecret());

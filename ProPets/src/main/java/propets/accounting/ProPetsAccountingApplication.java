@@ -1,16 +1,13 @@
-package telran.ProPets;
+package propets.accounting;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import telran.ProPets.dao.UserAccountRepository;
-import telran.ProPets.model.UserAccount;
+import propets.accounting.dao.UserAccountRepository;
+import propets.accounting.model.UserAccount;
 
 @SpringBootApplication
 public class ProPetsAccountingApplication implements CommandLineRunner{
@@ -37,8 +34,6 @@ public class ProPetsAccountingApplication implements CommandLineRunner{
 					.role("Administrator")					
 					.build();
 			userAccountRepository.save(admin);
-		}
-		
+		}		
 	}
-
 }

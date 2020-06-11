@@ -1,4 +1,4 @@
-package telran.ProPets.configuration;
+package propets.accounting.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;

@@ -1,4 +1,4 @@
-package telran.ProPets.controller;
+package propets.accounting.controller;
 
 import java.security.Principal;
 import java.util.Map;
@@ -17,13 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import telran.ProPets.dto.UserProfileDto;
-import telran.ProPets.dto.UserRegisterDto;
-
-import telran.ProPets.service.UserAccountService;
+import propets.accounting.dto.UserProfileDto;
+import propets.accounting.dto.UserRegisterDto;
+import propets.accounting.service.UserAccountService;
 
 @RestController
-
 @RequestMapping("/{lang}/v1")
 public class UserAccountController {
 
@@ -91,12 +89,6 @@ public class UserAccountController {
 		userAccountService.removeFavorite(login, serviceName, favorite);
 	}
 
-//	@GetMapping("/{login:.*}/favorites")
-//	public Map<String, Set<String>> getUserFavorites(@PathVariable String login,
-//			@RequestHeader("X-Token") String token) {
-//		return userAccountService.getUserFavorite(login);
-//	}
-
 	@PutMapping("/{login:.*}/activity/{activity}")
 	public void addActivity(@PathVariable String login, @RequestHeader("X-ServiceName") String serviceName,
 			@PathVariable String activity) {
@@ -108,12 +100,6 @@ public class UserAccountController {
 			@PathVariable String activity) {
 		userAccountService.removeActivity(login, serviceName, activity);
 	}
-
-//	@GetMapping("/{login:.*}/activities")
-//	public Map<String, Set<String>> getUserActivities(@PathVariable String login,
-//			@RequestHeader("X-Token") String token) {
-//		return userAccountService.getUserActivity(login);
-//	}
 
 	@GetMapping("/{login:.*}/userdata")
 	public Map<String, Set<String>> getUserData(@PathVariable String login, @RequestParam boolean dataType) {

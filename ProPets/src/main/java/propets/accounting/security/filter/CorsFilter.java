@@ -1,4 +1,4 @@
-package telran.ProPets.security.filter;
+package propets.accounting.security.filter;
 
 import java.io.IOException;
 
@@ -32,5 +32,4 @@ public class CorsFilter implements Filter {
 		}
 		chain.doFilter(request, servletResponse);
 	}
-
 }

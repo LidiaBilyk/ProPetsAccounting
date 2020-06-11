@@ -1,4 +1,4 @@
-package telran.ProPets.service;
+package propets.accounting.service;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

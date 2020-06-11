@@ -1,4 +1,4 @@
-package telran.ProPets.model;
+package propets.accounting.model;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -69,5 +69,4 @@ public class UserAccount implements Serializable{
 	public boolean removeActivity(String serviceName, String activity) {
 		return activities.get(serviceName).remove(activity);
 	}
-
 }

@@ -1,4 +1,4 @@
-package telran.ProPets.security.filter;
+package propets.accounting.security.filter;
 
 import java.util.Date;
 
@@ -8,7 +8,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import telran.ProPets.configuration.AccountingConfiguration;
+import propets.accounting.configuration.AccountingConfiguration;
 
 import java.io.IOException;
 import java.security.Key;

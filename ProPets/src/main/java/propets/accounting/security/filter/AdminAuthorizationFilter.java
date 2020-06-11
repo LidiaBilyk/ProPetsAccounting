@@ -1,4 +1,4 @@
-package telran.ProPets.security.filter;
+package propets.accounting.security.filter;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
-import telran.ProPets.dao.UserAccountRepository;
-import telran.ProPets.model.UserAccount;
+import propets.accounting.dao.UserAccountRepository;
+import propets.accounting.model.UserAccount;
 
 
 @Service
