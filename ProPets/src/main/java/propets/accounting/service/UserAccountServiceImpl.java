@@ -1,5 +1,7 @@
 package propets.accounting.service;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -12,10 +14,16 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
@@ -24,10 +32,13 @@ import propets.accounting.configuration.AccountingConfiguration;
 import propets.accounting.dao.UserAccountRepository;
 import propets.accounting.dto.UserProfileDto;
 import propets.accounting.dto.UserRegisterDto;
+import propets.accounting.dto.UserUpdateDto;
+import propets.accounting.exceptions.BadRequestException;
 import propets.accounting.exceptions.ConflictException;
 import propets.accounting.exceptions.ForbiddenException;
 import propets.accounting.exceptions.NotFoundException;
 import propets.accounting.model.UserAccount;
+
 
 @Service
 public class UserAccountServiceImpl implements UserAccountService {
@@ -88,19 +99,44 @@ public class UserAccountServiceImpl implements UserAccountService {
 	@Override
 	public UserProfileDto updateUser(String login, UserProfileDto userProfileDto) {
 		UserAccount userAccount = userAccountRepository.findById(login).get();
-
+		UserUpdateDto userUpdateDto = new UserUpdateDto();
 		if (userProfileDto.getName() != null) {
 			userAccount.setName(userProfileDto.getName());
+			userUpdateDto.setUsername(userProfileDto.getName());
 		}
 		if (userProfileDto.getPhone() != null) {
 			userAccount.setPhone(userProfileDto.getPhone());
 		}
 		if (userProfileDto.getAvatar() != null) {
 			userAccount.setAvatar(userProfileDto.getAvatar());
+			userUpdateDto.setAvatar(userProfileDto.getAvatar());
 		}
 		userAccountRepository.save(userAccount);
+		if (userUpdateDto.getAvatar() != null || userUpdateDto.getUsername() != null) {
+			sendUserUpdateDtoToService(userAccount, userUpdateDto);
+		}
 		return userAccountToUserProfileDto(userAccount);
 	}
+
+	private void sendUserUpdateDtoToService(UserAccount userAccount, UserUpdateDto userUpdateDto) {
+		for (String service : userAccount.getActivities().keySet()) {
+			if ("lostfound".equalsIgnoreCase(service)) {
+				userUpdateDto.setPostId(userAccount.getActivities().get(service));
+				RestTemplate restTemplate = new RestTemplate();
+				ResponseEntity<String> responseEntity = null;
+				try {
+					RequestEntity<UserUpdateDto> requestEntity = new RequestEntity<UserUpdateDto>(userUpdateDto, HttpMethod.PUT,
+							new URI("https://lostfoundpropets.herokuapp.com/lostfound/en/v1/updateuser"));
+					responseEntity = restTemplate.exchange(requestEntity, String.class);
+				} catch (RestClientException e) {
+					throw new ConflictException();
+				} catch (URISyntaxException e) {
+					throw new BadRequestException();
+				}
+			}
+		}		
+	}
+
 
 	@Override
 	public UserProfileDto deleteUser(String login) {
