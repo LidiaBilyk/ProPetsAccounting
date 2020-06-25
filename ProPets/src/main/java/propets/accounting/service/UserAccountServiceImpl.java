@@ -121,7 +121,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		}
 		try {
 			RequestEntity<UserUpdateDto> requestMessaging = new RequestEntity<UserUpdateDto>(userUpdateDto, HttpMethod.PUT,
-					new URI("https://messagingpropets.herokuapp.com/en/v1/updateuser"));
+					new URI("http://localhost:8080/en/v1/updateuser"));
 			responseMessaging = restTemplate.exchange(requestMessaging, String.class);
 		} catch (RestClientException e) {
 			throw new ConflictException();
