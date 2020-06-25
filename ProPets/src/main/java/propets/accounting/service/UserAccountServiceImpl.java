@@ -127,7 +127,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		} catch (URISyntaxException e) {
 			throw new BadRequestException();
 		}
-	}
+
 	}
 
 	@Override
