@@ -14,7 +14,6 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -39,10 +38,9 @@ import propets.accounting.exceptions.ForbiddenException;
 import propets.accounting.exceptions.NotFoundException;
 import propets.accounting.model.UserAccount;
 
-
 @Service
 public class UserAccountServiceImpl implements UserAccountService {
-	
+
 	@Autowired
 	AccountingConfiguration accountingConfiguration;
 
@@ -56,29 +54,18 @@ public class UserAccountServiceImpl implements UserAccountService {
 		}
 		String avatar = accountingConfiguration.getAvatarUri();
 		String hashPassword = BCrypt.hashpw(userRegisterDto.getPassword(), BCrypt.gensalt());
-		UserAccount userAccount = UserAccount.builder()
-				.email(userRegisterDto.getEmail())
-				.password(hashPassword)
-				.name(userRegisterDto.getName())
-				.role("User")
-				.avatar(avatar)
-				.build();
+		UserAccount userAccount = UserAccount.builder().email(userRegisterDto.getEmail()).password(hashPassword)
+				.name(userRegisterDto.getName()).role("User").avatar(avatar).build();
 		UserProfileDto userProfileDto = userAccountToUserProfileDto(userAccountRepository.save(userAccount));
 		String jwt = createJwt(userRegisterDto.getEmail(), accountingConfiguration.getSecret());
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("X-Token", jwt);
-		return new ResponseEntity<UserProfileDto>(userProfileDto, headers, HttpStatus.OK);		 
+		return new ResponseEntity<UserProfileDto>(userProfileDto, headers, HttpStatus.OK);
 	}
 
-
 	private UserProfileDto userAccountToUserProfileDto(UserAccount userAccount) {
-		return UserProfileDto.builder()
-				.email(userAccount.getEmail())
-				.name(userAccount.getName())
-				.phone(userAccount.getPhone())
-				.avatar(userAccount.getAvatar())
-				.roles(userAccount.getRoles())
-				.build();
+		return UserProfileDto.builder().email(userAccount.getEmail()).name(userAccount.getName())
+				.phone(userAccount.getPhone()).avatar(userAccount.getAvatar()).roles(userAccount.getRoles()).build();
 	}
 
 	@Override
@@ -112,31 +99,25 @@ public class UserAccountServiceImpl implements UserAccountService {
 			userUpdateDto.setAvatar(userProfileDto.getAvatar());
 		}
 		userAccountRepository.save(userAccount);
-//		if (userUpdateDto.getAvatar() != null || userUpdateDto.getUsername() != null) {
-//			sendUserUpdateDtoToService(userAccount, userUpdateDto);
-//		}
+		if (userUpdateDto.getAvatar() != null || userUpdateDto.getUsername() != null) {
+			sendUserUpdateDtoToService(userAccount, userUpdateDto);
+		}
 		return userAccountToUserProfileDto(userAccount);
 	}
 
-//	private void sendUserUpdateDtoToService(UserAccount userAccount, UserUpdateDto userUpdateDto) {
-//		for (String service : userAccount.getActivities().keySet()) {
-//			if ("lostfound".equalsIgnoreCase(service)) {
-//				userUpdateDto.setPostId(userAccount.getActivities().get(service));
-//				RestTemplate restTemplate = new RestTemplate();
-//				ResponseEntity<String> responseEntity = null;
-//				try {
-//					RequestEntity<UserUpdateDto> requestEntity = new RequestEntity<UserUpdateDto>(userUpdateDto, HttpMethod.PUT,
-//							new URI("https://lostfoundpropets.herokuapp.com/en/v1/updateuser"));
-//					responseEntity = restTemplate.exchange(requestEntity, String.class);
-//				} catch (RestClientException e) {
-//					throw new ConflictException();
-//				} catch (URISyntaxException e) {
-//					throw new BadRequestException();
-//				}
-//			}
-//		}		
-//	}
-
+	private void sendUserUpdateDtoToService(UserAccount userAccount, UserUpdateDto userUpdateDto) {
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> responseEntity = null;
+		try {
+			RequestEntity<UserUpdateDto> requestEntity = new RequestEntity<UserUpdateDto>(userUpdateDto, HttpMethod.PUT,
+					new URI("https://lostfoundpropets.herokuapp.com/en/v1/updateuser"));
+			responseEntity = restTemplate.exchange(requestEntity, String.class);
+		} catch (RestClientException e) {
+			throw new ConflictException();
+		} catch (URISyntaxException e) {
+			throw new BadRequestException();
+		}
+	}
 
 	@Override
 	public UserProfileDto deleteUser(String login) {
@@ -148,7 +129,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 	@Override
 	public Set<String> addRole(String userLogin, String role) {
 		UserAccount userAccount = userAccountRepository.findById(userLogin).orElseThrow(NotFoundException::new);
-		userAccount.addRole(role);		
+		userAccount.addRole(role);
 		userAccountRepository.save(userAccount);
 		return userAccount.getRoles();
 	}
@@ -160,7 +141,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		userAccountRepository.save(userAccount);
 		return userAccount.getRoles();
 	}
-	
+
 	@Override
 	public boolean blockUser(String userLogin, boolean block) {
 		UserAccount userAccount = userAccountRepository.findById(userLogin).orElseThrow(NotFoundException::new);
@@ -174,59 +155,53 @@ public class UserAccountServiceImpl implements UserAccountService {
 	}
 
 	@Override
-	public ResponseEntity<String> checkJwt(String token) {			
-		Claims claims = null;		
+	public ResponseEntity<String> checkJwt(String token) {
+		Claims claims = null;
 		try {
-		claims = verifyJwt(token, accountingConfiguration.getSecret());
-		} catch (Exception e) {				
+			claims = verifyJwt(token, accountingConfiguration.getSecret());
+		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		}			
-		UserAccount userAccount = userAccountRepository.findById(claims.getSubject()).orElse(null);		
-		if (userAccount == null) {			
+		}
+		UserAccount userAccount = userAccountRepository.findById(claims.getSubject()).orElse(null);
+		if (userAccount == null) {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 		String jwt = createJwt(claims.getSubject(), accountingConfiguration.getSecret());
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("X-Token", jwt);
-		headers.add("X-Login", userAccount.getEmail());		
+		headers.add("X-Login", userAccount.getEmail());
 		return new ResponseEntity<>(headers, HttpStatus.OK);
 	}
 
-	public String createJwt(String login, String secret) {		
+	public String createJwt(String login, String secret) {
 		SignatureAlgorithm signatureAlgotithm = SignatureAlgorithm.HS256;
 		Instant issuedAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
 		Instant expiration = issuedAt.plus(accountingConfiguration.getTerm(), ChronoUnit.DAYS);
 		byte[] keySecret = DatatypeConverter.parseBase64Binary(secret);
 		Key signingKey = new SecretKeySpec(keySecret, signatureAlgotithm.getJcaName());
-		JwtBuilder jwtBuilder = Jwts.builder()
-				.setIssuedAt(Date.from(issuedAt))
-				.setSubject(login)
-				.setExpiration(Date.from(expiration))
-				.signWith(signatureAlgotithm, signingKey);
+		JwtBuilder jwtBuilder = Jwts.builder().setIssuedAt(Date.from(issuedAt)).setSubject(login)
+				.setExpiration(Date.from(expiration)).signWith(signatureAlgotithm, signingKey);
 		return jwtBuilder.compact();
 	}
 
 	public Claims verifyJwt(String jwt, String secret) {
-		Claims claims = Jwts.parser()
-				.setSigningKey(DatatypeConverter.parseBase64Binary(secret))
-				.parseClaimsJws(jwt)
+		Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(secret)).parseClaimsJws(jwt)
 				.getBody();
 		return claims;
 	}
 
-	
 	@Override
-	public void addFavorite(String login, String serviceName, String favorite) {		
+	public void addFavorite(String login, String serviceName, String favorite) {
 		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
-		userAccount.addFavorite(serviceName, favorite);			
-		userAccountRepository.save(userAccount);		
+		userAccount.addFavorite(serviceName, favorite);
+		userAccountRepository.save(userAccount);
 	}
 
 	@Override
 	public void removeFavorite(String login, String serviceName, String favorite) {
 		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
-		userAccount.removeFavorite(serviceName, favorite);		
-		userAccountRepository.save(userAccount);		
+		userAccount.removeFavorite(serviceName, favorite);
+		userAccountRepository.save(userAccount);
 	}
 
 	@Override
@@ -235,11 +210,10 @@ public class UserAccountServiceImpl implements UserAccountService {
 		return userAccount.getFavorites();
 	}
 
-	
 //	@Override
 //	public Map<String, Set<String>> getUserData(String login, boolean dataType) {
 //		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
 //		return dataType? userAccount.getFavorites() : userAccount.getActivities();
 //	}
-	
+
 }
