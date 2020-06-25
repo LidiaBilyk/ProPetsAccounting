@@ -87,6 +87,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 	public UserProfileDto updateUser(String login, UserProfileDto userProfileDto) {
 		UserAccount userAccount = userAccountRepository.findById(login).get();
 		UserUpdateDto userUpdateDto = new UserUpdateDto();
+		userUpdateDto.setLogin(login);
 		if (userProfileDto.getName() != null) {
 			userAccount.setName(userProfileDto.getName());
 			userUpdateDto.setUsername(userProfileDto.getName());
@@ -100,12 +101,12 @@ public class UserAccountServiceImpl implements UserAccountService {
 		}
 		userAccountRepository.save(userAccount);
 		if (userUpdateDto.getAvatar() != null || userUpdateDto.getUsername() != null) {
-			sendUserUpdateDtoToService(userAccount, userUpdateDto);
+			sendUserUpdateDtoToService(userUpdateDto);
 		}
 		return userAccountToUserProfileDto(userAccount);
 	}
 
-	private void sendUserUpdateDtoToService(UserAccount userAccount, UserUpdateDto userUpdateDto) {
+	private void sendUserUpdateDtoToService(UserUpdateDto userUpdateDto) {
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> responseEntity = null;
 		try {
