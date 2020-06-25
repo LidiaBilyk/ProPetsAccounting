@@ -112,30 +112,30 @@ public class UserAccountServiceImpl implements UserAccountService {
 			userUpdateDto.setAvatar(userProfileDto.getAvatar());
 		}
 		userAccountRepository.save(userAccount);
-		if (userUpdateDto.getAvatar() != null || userUpdateDto.getUsername() != null) {
-			sendUserUpdateDtoToService(userAccount, userUpdateDto);
-		}
+//		if (userUpdateDto.getAvatar() != null || userUpdateDto.getUsername() != null) {
+//			sendUserUpdateDtoToService(userAccount, userUpdateDto);
+//		}
 		return userAccountToUserProfileDto(userAccount);
 	}
 
-	private void sendUserUpdateDtoToService(UserAccount userAccount, UserUpdateDto userUpdateDto) {
-		for (String service : userAccount.getActivities().keySet()) {
-			if ("lostfound".equalsIgnoreCase(service)) {
-				userUpdateDto.setPostId(userAccount.getActivities().get(service));
-				RestTemplate restTemplate = new RestTemplate();
-				ResponseEntity<String> responseEntity = null;
-				try {
-					RequestEntity<UserUpdateDto> requestEntity = new RequestEntity<UserUpdateDto>(userUpdateDto, HttpMethod.PUT,
-							new URI("https://lostfoundpropets.herokuapp.com/en/v1/updateuser"));
-					responseEntity = restTemplate.exchange(requestEntity, String.class);
-				} catch (RestClientException e) {
-					throw new ConflictException();
-				} catch (URISyntaxException e) {
-					throw new BadRequestException();
-				}
-			}
-		}		
-	}
+//	private void sendUserUpdateDtoToService(UserAccount userAccount, UserUpdateDto userUpdateDto) {
+//		for (String service : userAccount.getActivities().keySet()) {
+//			if ("lostfound".equalsIgnoreCase(service)) {
+//				userUpdateDto.setPostId(userAccount.getActivities().get(service));
+//				RestTemplate restTemplate = new RestTemplate();
+//				ResponseEntity<String> responseEntity = null;
+//				try {
+//					RequestEntity<UserUpdateDto> requestEntity = new RequestEntity<UserUpdateDto>(userUpdateDto, HttpMethod.PUT,
+//							new URI("https://lostfoundpropets.herokuapp.com/en/v1/updateuser"));
+//					responseEntity = restTemplate.exchange(requestEntity, String.class);
+//				} catch (RestClientException e) {
+//					throw new ConflictException();
+//				} catch (URISyntaxException e) {
+//					throw new BadRequestException();
+//				}
+//			}
+//		}		
+//	}
 
 
 	@Override
@@ -229,37 +229,17 @@ public class UserAccountServiceImpl implements UserAccountService {
 		userAccountRepository.save(userAccount);		
 	}
 
-//	@Override
-//	public Map<String, Set<String>> getUserFavorite(String login) {
-//		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
-//		return userAccount.getFavorites();
-//	}
-
 	@Override
-	public void addActivity(String login, String serviceName, String activity) {		
-		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);		
-		userAccount.addActivity(serviceName, activity);			
-		userAccountRepository.save(userAccount);		
-	}
-
-
-	@Override
-	public void removeActivity(String login, String serviceName, String activity) {
+	public Map<String, Set<String>> getUserFavorites(String login) {
 		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
-		userAccount.removeActivity(serviceName, activity);		
-		userAccountRepository.save(userAccount);		
+		return userAccount.getFavorites();
 	}
 
-//	@Override
-//	public Map<String, Set<String>> getUserActivity(String login) {
-//		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
-//		return userAccount.getActivities();
-//	}	
 	
-	@Override
-	public Map<String, Set<String>> getUserData(String login, boolean dataType) {
-		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
-		return dataType? userAccount.getFavorites() : userAccount.getActivities();
-	}
+//	@Override
+//	public Map<String, Set<String>> getUserData(String login, boolean dataType) {
+//		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
+//		return dataType? userAccount.getFavorites() : userAccount.getActivities();
+//	}
 	
 }

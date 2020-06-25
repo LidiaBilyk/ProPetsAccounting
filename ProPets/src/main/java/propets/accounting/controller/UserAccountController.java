@@ -3,7 +3,6 @@ package propets.accounting.controller;
 import java.security.Principal;
 import java.util.Map;
 import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,9 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import propets.accounting.dto.UserProfileDto;
 import propets.accounting.dto.UserRegisterDto;
 import propets.accounting.service.UserAccountService;
@@ -89,20 +86,13 @@ public class UserAccountController {
 		userAccountService.removeFavorite(login, serviceName, favorite);
 	}
 
-	@PutMapping("/{login:.*}/activity/{activity}")
-	public void addActivity(@PathVariable String login, @RequestHeader("X-ServiceName") String serviceName,
-			@PathVariable String activity) {
-		userAccountService.addActivity(login, serviceName, activity);
-	}
-
-	@DeleteMapping("/{login:.*}/activity/{activity}")
-	public void removeActivity(@PathVariable String login, @RequestHeader("X-ServiceName") String serviceName,
-			@PathVariable String activity) {
-		userAccountService.removeActivity(login, serviceName, activity);
-	}
-
 	@GetMapping("/{login:.*}/userdata")
-	public Map<String, Set<String>> getUserData(@PathVariable String login, @RequestParam boolean dataType) {
-		return userAccountService.getUserData(login, dataType);
+	public Map<String, Set<String>> getUserFavorites(@PathVariable String login) {
+		return userAccountService.getUserFavorites(login);
 	}
+
+//	@GetMapping("/{login:.*}/userdata")
+//	public Map<String, Set<String>> getUserData(@PathVariable String login, @RequestParam boolean dataType) {
+//		return userAccountService.getUserData(login, dataType);
+//	}
 }
