@@ -112,7 +112,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		ResponseEntity<String> responseMessaging = null;
 		try {
 			RequestEntity<UserUpdateDto> requestLostFound = new RequestEntity<UserUpdateDto>(userUpdateDto, HttpMethod.PUT,
-					new URI("https://lostfoundpropets.herokuapp.com/en/v1/updateuser"));
+					new URI(accountingConfiguration.getLostFoundUpdateUser()));
 			responseLostFound = restTemplate.exchange(requestLostFound, String.class);
 		} catch (RestClientException e) {
 			throw new ConflictException();
@@ -121,7 +121,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		}
 		try {
 			RequestEntity<UserUpdateDto> requestMessaging = new RequestEntity<UserUpdateDto>(userUpdateDto, HttpMethod.PUT,
-					new URI("http://localhost:8080/en/v1/updateuser"));
+					new URI(accountingConfiguration.getMessageUpdateUser()));
 			responseMessaging = restTemplate.exchange(requestMessaging, String.class);
 		} catch (RestClientException e) {
 			throw new ConflictException();

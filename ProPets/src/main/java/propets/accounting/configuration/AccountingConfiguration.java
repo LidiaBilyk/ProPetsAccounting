@@ -20,4 +20,8 @@ public class AccountingConfiguration {
 	String template;
 	@Value("${avatarUri}")
 	String avatarUri;
+	@Value("${lostFoundUpdateUser}")
+	String lostFoundUpdateUser;
+	@Value("${messageUpdateUser}")
+	String messageUpdateUser;
 }
