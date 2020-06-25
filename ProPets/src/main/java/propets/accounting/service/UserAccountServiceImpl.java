@@ -113,6 +113,12 @@ public class UserAccountServiceImpl implements UserAccountService {
 			RequestEntity<UserUpdateDto> requestLostFound = new RequestEntity<UserUpdateDto>(userUpdateDto, HttpMethod.PUT,
 					new URI("https://lostfoundpropets.herokuapp.com/en/v1/updateuser"));
 			responseEntity = restTemplate.exchange(requestLostFound, String.class);
+		} catch (RestClientException e) {
+			throw new ConflictException();
+		} catch (URISyntaxException e) {
+			throw new BadRequestException();
+		}
+		try {
 			RequestEntity<UserUpdateDto> requestMessaging = new RequestEntity<UserUpdateDto>(userUpdateDto, HttpMethod.PUT,
 					new URI("https://messagingpropets.herokuapp.com/en/v1/updateuser"));
 			responseEntity = restTemplate.exchange(requestMessaging, String.class);
@@ -121,6 +127,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		} catch (URISyntaxException e) {
 			throw new BadRequestException();
 		}
+	}
 	}
 
 	@Override
