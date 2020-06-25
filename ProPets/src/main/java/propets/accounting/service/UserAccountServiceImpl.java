@@ -110,9 +110,12 @@ public class UserAccountServiceImpl implements UserAccountService {
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> responseEntity = null;
 		try {
-			RequestEntity<UserUpdateDto> requestEntity = new RequestEntity<UserUpdateDto>(userUpdateDto, HttpMethod.PUT,
+			RequestEntity<UserUpdateDto> requestLostFound = new RequestEntity<UserUpdateDto>(userUpdateDto, HttpMethod.PUT,
 					new URI("https://lostfoundpropets.herokuapp.com/en/v1/updateuser"));
-			responseEntity = restTemplate.exchange(requestEntity, String.class);
+			responseEntity = restTemplate.exchange(requestLostFound, String.class);
+			RequestEntity<UserUpdateDto> requestMessaging = new RequestEntity<UserUpdateDto>(userUpdateDto, HttpMethod.PUT,
+					new URI("https://messagingpropets.herokuapp.com/en/v1/updateuser"));
+			responseEntity = restTemplate.exchange(requestMessaging, String.class);
 		} catch (RestClientException e) {
 			throw new ConflictException();
 		} catch (URISyntaxException e) {
