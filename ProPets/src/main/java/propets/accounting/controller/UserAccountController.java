@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import propets.accounting.dto.UserProfileDto;
 import propets.accounting.dto.UserRegisterDto;
+import propets.accounting.dto.UserUpdateDto;
 import propets.accounting.service.UserAccountService;
 
 @RestController
@@ -36,36 +37,32 @@ public class UserAccountController {
 	}
 
 	@GetMapping("/{login:.*}/info")
-	public UserProfileDto getUserById(@PathVariable String login, @RequestHeader("X-token") String token) {
+	public UserProfileDto getUserById(@PathVariable String login) {
 		return userAccountService.getUserById(login);
 	}
 
 	@PutMapping("/{login:.*}")
-	public UserProfileDto updateUser(@PathVariable String login, @RequestBody UserProfileDto userProfileDto,
-			@RequestHeader("X-token") String token) {
+	public UserProfileDto updateUser(@PathVariable String login, @RequestBody UserUpdateDto userProfileDto) {
 		return userAccountService.updateUser(login, userProfileDto);
 	}
 
 	@DeleteMapping("/{login:.*}")
-	public UserProfileDto deleteUser(@PathVariable String login, @RequestHeader("X-token") String token) {
+	public UserProfileDto deleteUser(@PathVariable String login) {
 		return userAccountService.deleteUser(login);
 	}
 
 	@PutMapping("/{login:.*}/role/{role}")
-	public Set<String> addRole(@PathVariable String login, @PathVariable String role,
-			@RequestHeader("X-token") String token) {
+	public Set<String> addRole(@PathVariable String login, @PathVariable String role) {
 		return userAccountService.addRole(login, role);
 	}
 
 	@DeleteMapping("/{login:.*}/role/{role}")
-	public Set<String> removeRole(@PathVariable String login, @PathVariable String role,
-			@RequestHeader("X-token") String token) {
+	public Set<String> removeRole(@PathVariable String login, @PathVariable String role) {
 		return userAccountService.removeRole(login, role);
 	}
 
 	@PutMapping("/{login:.*}/block/{block}")
-	public boolean blockUser(@PathVariable String login, @PathVariable boolean block,
-			@RequestHeader("X-token") String token) {
+	public boolean blockUser(@PathVariable String login, @PathVariable boolean block) {
 		return userAccountService.blockUser(login, block);
 	}
 
@@ -75,14 +72,12 @@ public class UserAccountController {
 	}
 
 	@PutMapping("/{login:.*}/favorite/{favorite}")
-	public void addFavorite(@PathVariable String login, @RequestHeader("X-ServiceName") String serviceName,
-			@PathVariable String favorite, @RequestHeader("X-Token") String token) {
+	public void addFavorite(@PathVariable String login, @RequestHeader("X-ServiceName") String serviceName,	@PathVariable String favorite) {
 		userAccountService.addFavorite(login, serviceName, favorite);
 	}
 
 	@DeleteMapping("/{login:.*}/favorite/{favorite}")
-	public void removeFavorite(@PathVariable String login, @RequestHeader("X-ServiceName") String serviceName,
-			@PathVariable String favorite, @RequestHeader("X-Token") String token) {
+	public void removeFavorite(@PathVariable String login, @RequestHeader("X-ServiceName") String serviceName, @PathVariable String favorite) {
 		userAccountService.removeFavorite(login, serviceName, favorite);
 	}
 
@@ -91,8 +86,4 @@ public class UserAccountController {
 		return userAccountService.getUserFavorites(login);
 	}
 
-//	@GetMapping("/{login:.*}/userdata")
-//	public Map<String, Set<String>> getUserData(@PathVariable String login, @RequestParam boolean dataType) {
-//		return userAccountService.getUserData(login, dataType);
-//	}
 }

@@ -7,12 +7,13 @@ import org.springframework.http.ResponseEntity;
 
 import propets.accounting.dto.UserProfileDto;
 import propets.accounting.dto.UserRegisterDto;
+import propets.accounting.dto.UserUpdateDto;
 
 public interface UserAccountService {
 	ResponseEntity<UserProfileDto> registerUser(UserRegisterDto userRegisterDto);
 	UserProfileDto userLogin(String login);
 	UserProfileDto getUserById(String login);
-	UserProfileDto updateUser(String login, UserProfileDto userProfileDto);	
+	UserProfileDto updateUser(String login, UserUpdateDto userUpdateDto);
 	UserProfileDto deleteUser(String login);
 	Set<String> addRole(String userLogin, String role);
 	Set<String> removeRole(String userLogin, String role);

@@ -54,8 +54,12 @@ public class UserAccountServiceImpl implements UserAccountService {
 		}
 		String avatar = accountingConfiguration.getAvatarUri();
 		String hashPassword = BCrypt.hashpw(userRegisterDto.getPassword(), BCrypt.gensalt());
-		UserAccount userAccount = UserAccount.builder().email(userRegisterDto.getEmail()).password(hashPassword)
-				.name(userRegisterDto.getName()).role("User").avatar(avatar).build();
+		UserAccount userAccount = UserAccount.builder()
+				.email(userRegisterDto.getEmail())
+				.password(hashPassword)
+				.name(userRegisterDto.getName())
+				.role("User").avatar(avatar)
+				.build();
 		UserProfileDto userProfileDto = userAccountToUserProfileDto(userAccountRepository.save(userAccount));
 		String jwt = createJwt(userRegisterDto.getEmail(), accountingConfiguration.getSecret());
 		HttpHeaders headers = new HttpHeaders();
@@ -84,23 +88,20 @@ public class UserAccountServiceImpl implements UserAccountService {
 	}
 
 	@Override
-	public UserProfileDto updateUser(String login, UserProfileDto userProfileDto) {
-		UserAccount userAccount = userAccountRepository.findById(login).get();
-		UserUpdateDto userUpdateDto = new UserUpdateDto();
-		userUpdateDto.setLogin(login);
-		if (userProfileDto.getName() != null) {
-			userAccount.setName(userProfileDto.getName());
-			userUpdateDto.setUsername(userProfileDto.getName());
+	public UserProfileDto updateUser(String login, UserUpdateDto userUpdateDto) {
+		UserAccount userAccount = userAccountRepository.findById(login).get();			
+		if (userUpdateDto.getName() != null) {
+			userAccount.setName(userUpdateDto.getName());			
 		}
-		if (userProfileDto.getPhone() != null) {
-			userAccount.setPhone(userProfileDto.getPhone());
+		if (userUpdateDto.getPhone() != null) {
+			userAccount.setPhone(userUpdateDto.getPhone());
 		}
-		if (userProfileDto.getAvatar() != null) {
-			userAccount.setAvatar(userProfileDto.getAvatar());
-			userUpdateDto.setAvatar(userProfileDto.getAvatar());
+		if (userUpdateDto.getAvatar() != null) {
+			userAccount.setAvatar(userUpdateDto.getAvatar());			
 		}
 		userAccountRepository.save(userAccount);
-		if (userUpdateDto.getAvatar() != null || userUpdateDto.getUsername() != null) {
+		if (userUpdateDto.getAvatar() != null || userUpdateDto.getName() != null) {
+			userUpdateDto.setLogin(login);
 			sendUserUpdateDtoToService(userUpdateDto);
 		}
 		return userAccountToUserProfileDto(userAccount);
@@ -108,27 +109,16 @@ public class UserAccountServiceImpl implements UserAccountService {
 
 	private void sendUserUpdateDtoToService(UserUpdateDto userUpdateDto) {
 		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<String> responseLostFound = null;
-		ResponseEntity<String> responseMessaging = null;
+		ResponseEntity<String> responseEntity = null;		
 		try {
-			RequestEntity<UserUpdateDto> requestLostFound = new RequestEntity<UserUpdateDto>(userUpdateDto, HttpMethod.PUT,
-					new URI(accountingConfiguration.getLostFoundUpdateUser()));
-			responseLostFound = restTemplate.exchange(requestLostFound, String.class);
+			RequestEntity<UserUpdateDto> requestEntity = new RequestEntity<UserUpdateDto>(userUpdateDto, HttpMethod.PUT,
+					new URI(accountingConfiguration.getUpdateUserData()));
+			responseEntity = restTemplate.exchange(requestEntity, String.class);
 		} catch (RestClientException e) {
 			throw new ConflictException();
 		} catch (URISyntaxException e) {
 			throw new BadRequestException();
 		}
-		try {
-			RequestEntity<UserUpdateDto> requestMessaging = new RequestEntity<UserUpdateDto>(userUpdateDto, HttpMethod.PUT,
-					new URI(accountingConfiguration.getMessageUpdateUser()));
-			responseMessaging = restTemplate.exchange(requestMessaging, String.class);
-		} catch (RestClientException e) {
-			throw new ConflictException();
-		} catch (URISyntaxException e) {
-			throw new BadRequestException();
-		}
-
 	}
 
 	@Override
@@ -191,13 +181,18 @@ public class UserAccountServiceImpl implements UserAccountService {
 		Instant expiration = issuedAt.plus(accountingConfiguration.getTerm(), ChronoUnit.DAYS);
 		byte[] keySecret = DatatypeConverter.parseBase64Binary(secret);
 		Key signingKey = new SecretKeySpec(keySecret, signatureAlgotithm.getJcaName());
-		JwtBuilder jwtBuilder = Jwts.builder().setIssuedAt(Date.from(issuedAt)).setSubject(login)
-				.setExpiration(Date.from(expiration)).signWith(signatureAlgotithm, signingKey);
+		JwtBuilder jwtBuilder = Jwts.builder()
+				.setIssuedAt(Date.from(issuedAt))
+				.setSubject(login)
+				.setExpiration(Date.from(expiration))
+				.signWith(signatureAlgotithm, signingKey);
 		return jwtBuilder.compact();
 	}
 
 	public Claims verifyJwt(String jwt, String secret) {
-		Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(secret)).parseClaimsJws(jwt)
+		Claims claims = Jwts.parser()
+				.setSigningKey(DatatypeConverter.parseBase64Binary(secret))
+				.parseClaimsJws(jwt)
 				.getBody();
 		return claims;
 	}
@@ -221,11 +216,4 @@ public class UserAccountServiceImpl implements UserAccountService {
 		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
 		return userAccount.getFavorites();
 	}
-
-//	@Override
-//	public Map<String, Set<String>> getUserData(String login, boolean dataType) {
-//		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(NotFoundException::new);
-//		return dataType? userAccount.getFavorites() : userAccount.getActivities();
-//	}
-
 }
